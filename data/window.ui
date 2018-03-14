@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+	<requires lib="gtk+" version="3.12"/>
+	<template class="ParoleApplicationWindow" parent="GtkApplicationWindow">
+
+		<property name="title" translatable="yes">Parole</property>
+		<property name="default-width">600</property>
+		<property name="default-height">400</property>
+
+		<child type="titlebar">
+			<object class="GtkHeaderBar" id="header">
+				<property name="visible">True</property>
+				<property name="show-close-button">True</property>
+ 				<child type="title">
+					<object class="GtkButton" id="lock_button">
+						<property name="visible">False</property>
+						<property name="label">Lock</property>
+						<signal name="clicked" handler="on_lock_button_clicked" />
+					</object>
+				</child>
+				<child>
+					<object class="GtkButton" id="passwords_visible_button">
+						<property name="visible">True</property>
+						<property name="label">Show passwords</property>
+						<signal name="clicked" handler="on_passwords_visible_button_clicked" />
+					</object>
+				</child>
+ 			</object>
+		</child>
+		<child>
+ 			<object class="GtkStack" id="stack">
+
+				<property name="visible">True</property>
+				<property name="transition-type">slide-left</property>
+
+ 				<child>
+ 					<object class="GtkBox" id="password_box">
+						<property name="visible">True</property>
+						<property name="orientation">vertical</property>
+						<property name="homogeneous">True</property>
+						<property name="expand">False</property>
+
+						<child>
+							<object class="GtkAlignment">
+								<property name="visible">True</property>
+								<property name="xalign">0.5</property>
+								<property name="valign">0.5</property>
+								<property name="xscale">0</property>
+								<property name="yscale">0</property>
+
+								<child>
+									<object class="GtkBox">
+										<property name="visible">True</property>
+										<property name="orientation">vertical</property>
+										<child>
+											<object class="GtkLabel">
+												<property name="visible">True</property>
+												<property name="label">Enter Password</property>
+											</object>
+										</child>
+										<child>
+											<object class="GtkEntry" id="password_entry">
+												<property name="visible">True</property>
+												<property name="visibility">False</property>
+												<property name="width-request">200</property>
+												<property name="expand">False</property>
+												<property name="placeholder-text">Enter password</property>
+												<signal name="activate" handler="on_password_entry_activated" />
+											</object>
+										</child>
+									</object>
+								</child>
+							</object>
+ 						</child>
+					</object>
+ 				</child>
+
+				<child>
+					<object class='GtkBox' id="content_box">
+						<property name="visible">True</property>
+						<property name="orientation">vertical</property>
+
+						<child>
+							<object class="GtkHPaned" id="hpaned">
+								<property name="visible">True</property>
+								<property name="position">100</property>
+								<property name="position-set">True</property>
+
+								<child>
+									<object class="GtkScrolledWindow" id="sidebar_sw">
+										<property name="visible">True</property>
+										<property name="hscrollbar-policy">never</property>
+										<property name="vscrollbar-policy">automatic</property>
+									</object>
+								</child>
+								<child>
+									<object class="GtkLabel">
+										<property name="visible">True</property>
+										<property name="label">I am the main area</property>
+									</object>
+									<object class="GtkTreeView" id="passwords_treeview">
+										<property name="visible">True</property>
+										<!-- <property name="model">passwords_liststore</property> -->
+										<child>
+											<object class="GtkTreeViewColumn">
+												<property name="title">Title</property>
+												<property name="resizable">True</property>
+												<child>
+													<object class="GtkCellRendererText" />
+													<attributes>
+														<attribute name="text">0</attribute>
+													</attributes>
+												</child>
+											</object>
+										</child>
+										<child>
+											<object class="GtkTreeViewColumn">
+												<property name="title">URL</property>
+												<property name="resizable">True</property>
+												<child>
+													<object class="GtkCellRendererText" />
+													<attributes>
+														<attribute name="text">1</attribute>
+													</attributes>
+												</child>
+											</object>
+										</child>
+										<child>
+											<object class="GtkTreeViewColumn">
+												<property name="title">Username</property>
+												<property name="resizable">True</property>
+												<child>
+													<object class="GtkCellRendererText" />
+													<attributes>
+														<attribute name="text">2</attribute>
+													</attributes>
+												</child>
+											</object>
+										</child>
+										<child>
+											<object class="GtkTreeViewColumn" id="password_column">
+												<property name="title">Password</property>
+												<property name="resizable">True</property>
+												<child>
+													<object class="GtkCellRendererText" id="password_cell" />
+													<attributes>
+														<attribute name="text">3</attribute>
+													</attributes>
+												</child>
+											</object>
+										</child>
+									</object>
+								</child>
+							</object>
+						</child>
+		  			</object>
+		  		</child>
+		  	</object>
+ 		</child>
+	</template>
+</interface>

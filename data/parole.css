@@ -1,0 +1,10 @@
+/**
+ * CSS Style Sheet
+ *
+ * @author Johannes Braun
+ * @package parole
+ */
+
+@define-color colorPrimary rgb(250, 220, 100);
+/* @define-color textColorPrimary rgb(255, 255, 255);  */
+/* @define-color textColorShadow rgb(200, 100, 100); */
