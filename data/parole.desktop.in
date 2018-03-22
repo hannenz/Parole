@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Parole
-Icon=parole
-StartupNotify=true
-Exec=/usr/bin/parole

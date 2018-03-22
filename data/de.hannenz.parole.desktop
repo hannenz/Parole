@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Parole
+GenericName=Password manager
+Comment=Manage your passwords with this app
+Categories=Utility
+Exec=de.hannenz.parole
+Icon=application-default-icon
+Terminal=false
+Type=Application
+X-GNOME-Gettext-Domain=parole
+Keywords=password

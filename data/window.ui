@@ -4,13 +4,20 @@
 	<template class="ParoleApplicationWindow" parent="GtkApplicationWindow">
 
 		<property name="title" translatable="yes">Parole</property>
-		<property name="default-width">600</property>
-		<property name="default-height">400</property>
+		<property name="default_width">780</property>
+		<property name="default_height">560</property>
 
 		<child type="titlebar">
 			<object class="GtkHeaderBar" id="header">
 				<property name="visible">True</property>
 				<property name="show-close-button">True</property>
+				<child>
+					<object class="GtkButton" id="new_button">
+						<property name="visible">False</property>
+						<property name="label">New</property>
+						<signal name="clicked" handler="on_new_button_clicked" />
+					</object>
+				</child>
  				<child type="title">
 					<object class="GtkButton" id="lock_button">
 						<property name="visible">False</property>
@@ -18,13 +25,23 @@
 						<signal name="clicked" handler="on_lock_button_clicked" />
 					</object>
 				</child>
+
 				<child>
-					<object class="GtkButton" id="passwords_visible_button">
+					<object class="GtkMenuButton">
 						<property name="visible">True</property>
-						<property name="label">Show passwords</property>
-						<signal name="clicked" handler="on_passwords_visible_button_clicked" />
 					</object>
+					<packing>
+
+					</packing>
 				</child>
+
+				<!-- <child> -->
+				<!-- 	<object class="GtkButton" id="passwords_visible_button"> -->
+				<!-- 		<property name="visible">True</property> -->
+				<!-- 		<property name="label">Show passwords</property> -->
+				<!-- 		<signal name="clicked" handler="on_passwords_visible_button_clicked" /> -->
+				<!-- 	</object> -->
+				<!-- </child> -->
  			</object>
 		</child>
 		<child>

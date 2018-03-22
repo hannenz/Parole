@@ -30,7 +30,7 @@ namespace Parole {
 		 * 
 		 * @return Xml.Node 			The root node of the XML document or NULL in case of an error
 		 */
-		public unowned Xml.Doc? load(File file, string password) {
+		public unowned Xml.Doc? load (File file, string password) {
 
 			string file_contents, filename;
 			size_t length;
@@ -39,7 +39,8 @@ namespace Parole {
 			debug("Opening file: %s\n", filename);
 			try {
 				FileUtils.get_contents(filename, out file_contents, out length);
-			} catch (GLib.Error e) {
+			}
+			catch (GLib.Error e) {
 				error(e.message);
 			}
 			
@@ -52,7 +53,7 @@ namespace Parole {
 			return this.XmlDoc;
 		}
 
-//~ 		public bool save(string filename, string password) {
+ 		public bool save (string filename, string password) {
 
 			// Read XmlDoc
 
@@ -64,7 +65,7 @@ namespace Parole {
 
 			// Save to disk
 
-//~ 			return true;
-//~ 		}
+ 			return true;
+ 		}
 	}
 }

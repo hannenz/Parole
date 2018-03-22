@@ -27,6 +27,33 @@ namespace Parole {
 
 			window = new ApplicationWindow (this);
 			window.present();
+
+			var entry = Unity.LauncherEntry.get_for_desktop_id ("de.hannenz.parole.desktop");
+			entry.count_visible = true;
+			entry.count = 12;
+
+			// Create a root quicklist
+			var quicklist = new Dbusmenu.Menuitem ();
+
+			// Create root's children
+			var item1 = new Dbusmenu.Menuitem ();
+			item1.property_set (Dbusmenu.MENUITEM_PROP_LABEL, "Item 1");
+			item1.item_activated.connect (() => {
+				message ("Item 1 activated");
+			});
+
+			var item2 = new Dbusmenu.Menuitem ();
+			item2.property_set (Dbusmenu.MENUITEM_PROP_LABEL, "Item 2");
+			item2.item_activated.connect (() => {
+				message ("Item 2 activated");
+			});
+
+			// Add children to the quicklist
+			quicklist.child_append (item1);
+			quicklist.child_append (item2);
+
+			// Finally, tell libunity to show the desired quicklist
+			entry.quicklist = quicklist;
 		}
 
 		public override void open (GLib.File[] files, string hint){

@@ -12,5 +12,7 @@ namespace Parole {
 
 		public string remark;
 
+		public Xml.Node xml_node;
+
 	}
 }

@@ -2,18 +2,29 @@ using Gtk;
 
 namespace Parole {
 	
+	[GtkTemplate (ui="/de/hannenz/parole/entry_dialog.ui")]
 	public class PasswordEntryDialog : Gtk.Dialog {
 
+		[GtkChild]
 		private Gtk.Entry titleEntry;
+
+		[GtkChild]
 		private Gtk.Entry urlEntry;
+
+		[GtkChild]
 		private Gtk.Entry usernameEntry;
+
+		[GtkChild]
 		private Gtk.Entry secretEntry;
+
+		[GtkChild]
 		private Gtk.TextView remarkEntry;
+
 		private string category;
 
 		public PasswordEntry pwEntry;
 
-		public PasswordEntryDialog(PasswordEntry? pwEntry, string category) {
+		public PasswordEntryDialog (PasswordEntry? pwEntry, string category) {
 
 			this.pwEntry = pwEntry;
 			this.category = category;
@@ -21,12 +32,17 @@ namespace Parole {
 			this.title = pwEntry.title + " in " + category;
 			this.set_default_size(500, 300);
 
-
-			create_widgets();
-			connect_signals();
+			if (pwEntry != null) {
+				titleEntry.set_text (pwEntry.title);
+				urlEntry.set_text (pwEntry.url);
+				usernameEntry.set_text (pwEntry.username);
+				secretEntry.set_text (pwEntry.secret);
+				remarkEntry.buffer.text = pwEntry.remark;
+			}
+			this.response.connect(on_response);
 		}
 
-		private void create_widgets() {
+		private void create_widgets () {
 
 			var grid = new Gtk.Grid();
 			grid.set_column_spacing(10);

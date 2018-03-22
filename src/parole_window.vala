@@ -30,6 +30,9 @@ namespace Parole {
 		private Gtk.Button lock_button;
 
 		[GtkChild]
+		private Gtk.Button new_button;
+
+		[GtkChild]
 		private Gtk.TreeView passwords_treeview;
 
 		[GtkChild]
@@ -46,20 +49,21 @@ namespace Parole {
 
 		private Granite.Widgets.SourceList sourcelist;
 
-		[GtkCallback]
-		private void on_passwords_visible_button_clicked (Gtk.Button button) {
-			passwords_visible = !passwords_visible;
-		//	button.set_label(passwords_visible ? "Hide passwords" : "Show passwords");
-			button.set_label(passwords_visible.to_string());
-		}
+		/* [GtkCallback] */
+		/* private void on_passwords_visible_button_clicked (Gtk.Button button) { */
+		/* 	passwords_visible = !passwords_visible; */
+		/* //	button.set_label(passwords_visible ? "Hide passwords" : "Show passwords"); */
+		/* 	button.set_label(passwords_visible.to_string()); */
+		/* } */
 
 		[GtkCallback]
 		public void on_password_entry_activated (Gtk.Entry entry) {
-			stdout.printf ("You entered: %s\n", entry.get_text ());
-			if ( entry.get_text() == "jmp$fce2@c64" || true){
-				stack.set_visible_child(content_box);	
-				lock_button.show();
-				app_menu.show();
+			/* stdout.printf ("You entered: %s\n", entry.get_text ()); */
+			if ( entry.get_text () == "masterpassword" || true){
+				stack.set_visible_child (content_box);	
+				lock_button.show ();
+				new_button.show ();
+				app_menu.show_all ();
 			}
 			else {
 				stdout.printf("Wrong password, try again...!\n");
@@ -71,8 +75,14 @@ namespace Parole {
 		public void on_lock_button_clicked () {
 			stack.set_visible_child(password_box);
 			password_entry.grab_focus();
+			new_button.hide ();
 			lock_button.hide();
 			app_menu.hide();
+		}
+
+		[GtkCallback]
+		public void on_new_button_clicked () {
+			message ("New button has been clicked");
 		}
 
 		public ApplicationWindow (Gtk.Application application) {
@@ -80,17 +90,18 @@ namespace Parole {
 
 			// passwords_visible = false;
 
-			this.set_default_size(800,600);
+			this.set_default_size(960,680);
 
 			this.open(GLib.File.new_for_path("/home/hannenz/Parole/passwords.xml"));
 
 			passwords_liststore = new Gtk.ListStore(
-				5,
+				6,
 				typeof(string),				/* title */
 				typeof(string),				/* url */
 				typeof(string),				/* username */
 				typeof(string),				/* password */
-				typeof(string)				/* remark */
+				typeof(string),				/* remark */
+				typeof(Xml.Node) 				/* XML node */
 			);
 			passwords_treeview.set_model(passwords_liststore);
 			passwords_treeview.row_activated.connect(on_passwords_treeview_row_activated);
@@ -105,6 +116,9 @@ namespace Parole {
 			/* var item = new Gtk.MenuItem.with_label("New entry"); */
 			/* item.activate.connect(on_new_entry); */
 			/* menu.add(item); */
+            /*  */
+			/* item = new Gtk.MenuItem.with_label ("Foo bar"); */
+			/* menu.add (item); */
             /*  */
 			/* app_menu = new Granite.Widgets.AppMenu(menu); */
 			/* header.pack_end(app_menu); */
@@ -176,9 +190,9 @@ namespace Parole {
 
 		public void render_password (/*Gtk.CellLayout layout, */Gtk.CellRendererText cell, Gtk.TreeModel model, Gtk.TreeIter iter) {
 //			debug (passwords_visible.to_string());
-			if (passwords_visible == false && false) {
+			/* if (passwords_visible == false && false) { */
 				cell.set_property("text", "∙∙∙∙∙∙");
-			}
+			/* } */
 		}
 
 		public void open (GLib.File file){
@@ -195,7 +209,6 @@ namespace Parole {
 				stderr.printf("No root element in XML file found\n");
 				return;
 			}
-			stdout.printf ("%s\n", rootNode->name);
 
 			sourcelist = new Granite.Widgets.SourceList();
 			var root = sourcelist.root;
@@ -269,7 +282,8 @@ namespace Parole {
 						1, passwordEntry.url,
 						2, passwordEntry.username,
 						3, passwordEntry.secret,
-						4, passwordEntry.remark
+						4, passwordEntry.remark,
+						5, iter
 					);
 				}
 			}
@@ -324,10 +338,35 @@ namespace Parole {
 					3, dlg.pwEntry.secret,
 					4, dlg.pwEntry.remark
 				);
+
+				// Save password entry in XML doc
+				Xml.Node *node;
+				passwords_liststore.get(iter, 5, out node);
+
+				node->set_prop ("last-change", new GLib.DateTime.now_local ().to_string ());
+				node->set_prop ("title", dlg.pwEntry.title);
+				for (Xml.Node *subnode = node->children; subnode != null; subnode = subnode->next) {
+					if (subnode->type == Xml.ElementType.ELEMENT_NODE) {
+						switch (subnode->name) {
+							case "url":
+								subnode->set_content (dlg.pwEntry.url);
+								break;
+							case "username":
+								subnode->set_content (dlg.pwEntry.username);
+								break;
+							case "secret":
+								subnode->set_content (dlg.pwEntry.secret);
+								break;
+							case "remark":
+								subnode->set_content (dlg.pwEntry.remark);
+								break;
+						}
+					}
+				}
+				message ("Saving xml document\n");
+				XmlDoc->save_file ("/home/hannenz/Parole/passwords.xml");
 			}
 			dlg.destroy();
 		}
-
-
 	}
 }
