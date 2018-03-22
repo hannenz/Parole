@@ -1,4 +1,4 @@
-PACKAGES 	= glib-2.0 gtk+-3.0 granite libxml-2.0 libarchive unity 
+PACKAGES 	= glib-2.0 gtk+-3.0 granite libxml-2.0 libarchive unity libsoup-2.4
 SOURCES 	= $(wildcard src/*.vala)
 PRG 		= de.hannenz.parole
 

@@ -117,6 +117,7 @@
 									</object>
 									<object class="GtkTreeView" id="passwords_treeview">
 										<property name="visible">True</property>
+										<property name="rules_hint">True</property>
 										<!-- <property name="model">passwords_liststore</property> -->
 										<child>
 											<object class="GtkTreeViewColumn">

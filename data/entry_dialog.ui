@@ -1,11 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
 	<requires lib="gtk+" version="3.12"/>
-
 	<template class="ParolePasswordEntryDialog">
 
 		<property name="use-header-bar">1</property>
 		<property name="margin">40</property>
+		<child>
+			<object class="GtkPopover" id="generator">
+				<property name="visible">False</property>
+				<property name="relative_to">secretEntry</property>
+				<child>
+					<object class="GtkGrid">
+						<property name="column-spacing">10</property>
+						<property name="row-spacing">10</property>
+						<property name="column-homogeneous">False</property>
+						<property name="row-homogeneous">False</property>
+						<property name="border-width">10</property>
+						<child>
+							<object class="GtkSpinButton" id="generator_spin_button">
+								<property name="visible">True</property>
+								<property name="adjustment">sb-adj</property>
+								<signal name="value_changed" handler="on_generator_spin_button_value_changed" />
+								<child>
+									<object class="GtkAdjustment" id="sb-adj">
+										<property name="lower">3</property>
+										<property name="upper">100</property>
+										<property name="step_increment">1</property>
+										<property name="value">12</property>
+									</object>
+								</child>
+							</object>
+							<packing>
+								<property name="left_attach">0</property>
+								<property name="top_attach">0</property>
+								<property name="width">1</property>
+								<property name="height">1</property>
+							</packing>
+						</child>
+						<child>
+							<object class="GtkEntry" id="generated_password_entry">
+							</object>
+							<packing>
+								<property name="left_attach">1</property>
+								<property name="top_attach">0</property>
+								<property name="width">1</property>
+								<property name="height">1</property>
+							</packing>
+						</child>
+					</object>
+				</child>
+			</object>
+		</child>
 		<child type="action">
 			<object class="GtkButton" id="cancel">
 				<property name="visible">True</property>
@@ -24,6 +69,7 @@
 			<action-widget response="cancel">cancel</action-widget>
 			<action-widget response="apply" default="true">apply</action-widget>
 		</action-widgets>
+
 
 		<child internal-child="vbox">
 			<object class="GtkBox" id="dialog-vbox1">
@@ -124,8 +170,40 @@
 							</packing>
 						</child>
 						<child>
-							<object class="GtkEntry" id="secretEntry">
+							<object class="GtkBox">
 								<property name="visible">True</property>
+								<property name="orientation">horizontal</property>
+								<property name="homogeneous">False</property>
+								<property name="expand">False</property>
+								<child>
+									<object class="GtkEntry" id="secretEntry">
+										<property name="visible">True</property>
+									</object>
+								</child>
+								<child>
+									<object class="GtkButton">
+										<property name="visible">True</property>
+										<property name="label">Generate</property>
+										<signal name="clicked" handler="on_generate_password_button_clicked" />
+									</object>
+								</child>
+								<child>
+									<!-- <object class="GtkButton" id="pwned_button"> -->
+									<!-- 	<property name="visible">True</property> -->
+									<!-- 	<property name="label">Pwned</property> -->
+									<!-- 	<signal name="clicked" handler="on_pwned_button_clicked" /> -->
+									<!-- </object> -->
+									<object class="GtkSpinner" id="pwned_spinner">
+										<property name="visible">True</property>
+										<property name="margin_left">10</property>
+									</object>
+								</child>
+								<child>
+									<object class="GtkLabel" id="pwned_label">
+										<property name="visible">False</property>
+										<property name="margin_left">10</property>
+									</object>
+								</child>
 							</object>
 							<packing>
 								<property name="left_attach">1</property>

@@ -20,9 +20,78 @@ namespace Parole {
 		[GtkChild]
 		private Gtk.TextView remarkEntry;
 
+		[GtkChild]
+		private Gtk.Spinner pwned_spinner;
+
+		[GtkChild]
+		private Gtk.Label pwned_label;
+
 		private string category;
 
 		public PasswordEntry pwEntry;
+
+		[GtkChild]
+		private Gtk.Popover generator;
+
+		[GtkChild]
+		private Gtk.Entry generated_password_entry;
+
+		[GtkChild]
+		private Gtk.SpinButton generator_spin_button;
+
+		/* [GtkCallback] */
+		/* private void on_pwned_button_clicked () { */
+		/* } */
+
+		[GtkCallback]
+		private void on_generate_password_button_clicked () {
+			/* var popover = new Popover (secretEntry); */
+			var label = new Gtk.Label ("Generate a password");
+			/* popover.set_border (10); */
+			generator.show_all ();
+			regenerate_password ();
+		}
+
+		[GtkCallback]
+		private void on_generator_spin_button_value_changed () {
+			regenerate_password ();
+
+		}
+
+		private void regenerate_password () {
+			int exit_status;
+			string standard_output, standard_error;
+			Process.spawn_command_line_sync ("pwgen %u 1".printf (generator_spin_button.get_value_as_int ()), out standard_output,
+                                               out standard_error,
+                                               out exit_status);
+
+			generated_password_entry.set_text (standard_output.chomp ());
+		}
+
+		private void check_if_pawned () {
+
+			var password = secretEntry.get_text ();
+			if (password.length == 0) {
+				return;
+			}
+			message ("Checking password:  %s\n".printf (password));
+
+			// Get SHA1 hash of password
+			var hash = GLib.Checksum.compute_for_string (ChecksumType.SHA1, password);
+
+			string url = "https://api.pwnedpasswords.com/pwnedpassword/%s".printf (hash);
+			var session = new Soup.Session ();
+			var message = new Soup.Message ("GET", url);
+
+			pwned_spinner.start ();
+			session.queue_message (message, (session, message) => {
+				pwned_spinner.stop ();
+				pwned_spinner.hide ();
+				pwned_label.set_label (message.status_code == 404 ? "ok" : "pwned");
+				pwned_label.show ();
+			});
+		}
+
 
 		public PasswordEntryDialog (PasswordEntry? pwEntry, string category) {
 
@@ -40,6 +109,8 @@ namespace Parole {
 				remarkEntry.buffer.text = pwEntry.remark;
 			}
 			this.response.connect(on_response);
+
+			check_if_pawned ();
 		}
 
 		private void create_widgets () {
