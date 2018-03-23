@@ -13,16 +13,47 @@
 		<child>
 			<object class="GtkImage" id="list_item_image">
 				<property name="visible">True</property>
+				<property name="stock">gtk-new</property>
 			</object>
+			<packing>
+				<property name="left_attach">0</property>
+				<property name="top_attach">0</property>
+				<property name="width">2</property>
+				<property name="height">2</property>
+			</packing>
 		</child>
 		<child>
 			<object class="GtkLabel" id="list_item_label">
 				<property name="visible">True</property>
 			</object>
+			<packing>
+				<property name="left_attach">2</property>
+				<property name="top_attach">0</property>
+				<property name="width">4</property>
+				<property name="height">1</property>
+			</packing>
 		</child>
 		<child>
 			<object class="GtkActionBar">
+				<child>
+					<object class="GtkButton">
+						<property name="visible">True</property>
+						<property name="label">gtk-edit</property>
+					</object>
+				</child>
+				<child>
+					<object class="GtkButton">
+						<property name="visible">True</property>
+						<property name="label">gtk-delete</property>
+					</object>
+				</child>
 			</object>
+			<packing>
+				<property name="left_attach">0</property>
+				<property name="top_attach">2</property>
+				<property name="width">6</property>
+				<property name="height">1</property>
+			</packing>
 		</child>
 	</template>
 </interface>

@@ -126,6 +126,13 @@ namespace Parole {
 			selection.changed.connect(on_passwords_treeview_selection_changed);
 
 			password_column.set_cell_data_func(password_cell, (Gtk.CellLayoutDataFunc)render_password);
+
+			// Fake item
+
+			var item = new ListItem (null, "Foobar");
+			passwords_listbox.add (item);
+			item.show ();
+			passwords_listbox.show_all ();
 		}
 
 		[GtkCallback]
@@ -303,8 +310,10 @@ namespace Parole {
 
 					// Listbox variant:
 
+					debug ("Adding list item: %s".printf (passwordEntry.title));
 					var list_item = new ListItem (null, passwordEntry.title);
-					passwords_listbox.insert (list_item, -1);
+					passwords_listbox.add (list_item);
+					list_item.show_all ();
 				}
 			}
 		}

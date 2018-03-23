@@ -114,12 +114,11 @@
 									</object>
 								</child>
 								<child>
-									<object class="GtkLabel">
-										<property name="label">foo</property>
-									</object>
 									<object class="GtkListBox" id="passwords_listbox">
 										<property name="visible">True</property>
 									</object>
+								</child>
+								<child>
 									<object class="GtkTreeView" id="passwords_treeview">
 										<property name="visible">False</property>
 										<property name="rules_hint">True</property>
