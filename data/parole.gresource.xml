@@ -5,6 +5,7 @@
 		<file preprocess="xml-stripblanks">ui/entry_dialog.ui</file>
 		<file preprocess="xml-stripblanks">ui/password_generator.ui</file>
 		<file preprocess="xml-stripblanks">ui/app_menu.ui</file>
+		<file preprocess="xml-stripblanks">ui/list_item.ui</file>
 		<file>parole.css</file>
 		<file>parole.png</file>
 	</gresource>

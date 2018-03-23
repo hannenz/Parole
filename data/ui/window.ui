@@ -115,13 +115,14 @@
 								</child>
 								<child>
 									<object class="GtkLabel">
+										<property name="label">foo</property>
+									</object>
+									<object class="GtkListBox" id="passwords_listbox">
 										<property name="visible">True</property>
-										<property name="label">I am the main area</property>
 									</object>
 									<object class="GtkTreeView" id="passwords_treeview">
-										<property name="visible">True</property>
+										<property name="visible">False</property>
 										<property name="rules_hint">True</property>
-										<!-- <property name="model">passwords_liststore</property> -->
 										<child>
 											<object class="GtkTreeViewColumn">
 												<property name="title">Title</property>

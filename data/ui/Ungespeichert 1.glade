@@ -2,6 +2,39 @@
 <!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.12"/>
+  <object class="GtkBox" id="box1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkImage" id="image2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="pixbuf">/tmp/twitter.jpg</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="label2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Twitter Account
+https://twitter.com</property>
+        <property name="xalign">0</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
   <object class="GtkGrid" id="grid1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -23,28 +56,13 @@
       <object class="GtkLabel" id="label1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Twitter Account</property>
+        <property name="label" translatable="yes">Twitter Account
+https://twitter.com</property>
         <property name="xalign">0</property>
       </object>
       <packing>
         <property name="left_attach">2</property>
         <property name="top_attach">0</property>
-        <property name="width">3</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkLinkButton" id="linkbutton1">
-        <property name="label" translatable="yes">button</property>
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="receives_default">True</property>
-        <property name="relief">none</property>
-        <property name="xalign">0</property>
-        <property name="uri">https://twitter.com</property>
-      </object>
-      <packing>
-        <property name="left_attach">2</property>
-        <property name="top_attach">1</property>
         <property name="width">3</property>
       </packing>
     </child>
@@ -72,6 +90,9 @@
         <property name="left_attach">5</property>
         <property name="top_attach">1</property>
       </packing>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>

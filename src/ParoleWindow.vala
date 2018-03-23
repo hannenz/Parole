@@ -42,6 +42,9 @@ namespace Parole {
 		private Gtk.TreeView passwords_treeview;
 
 		[GtkChild]
+		private Gtk.ListBox passwords_listbox;
+
+		[GtkChild]
 		private Gtk.TreeViewColumn password_column;
 
 		[GtkChild]
@@ -297,6 +300,11 @@ namespace Parole {
 						4, passwordEntry.remark,
 						5, iter
 					);
+
+					// Listbox variant:
+
+					var list_item = new ListItem (null, passwordEntry.title);
+					passwords_listbox.insert (list_item, -1);
 				}
 			}
 		}
