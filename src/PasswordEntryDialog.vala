@@ -2,7 +2,7 @@ using Gtk;
 
 namespace Parole {
 	
-	[GtkTemplate (ui="/de/hannenz/parole/entry_dialog.ui")]
+	[GtkTemplate (ui="/de/hannenz/parole/ui/entry_dialog.ui")]
 	public class PasswordEntryDialog : Gtk.Dialog {
 
 		[GtkChild]
@@ -90,7 +90,7 @@ namespace Parole {
 				return false;
 			});
 			secretEntry.focus_out_event.connect ( () => {
-				secretEntry.set_visibility (false);
+				/* secretEntry.set_visibility (false); */
 				return false;
 			});
 

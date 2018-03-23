@@ -14,34 +14,37 @@
 				<child>
 					<object class="GtkButton" id="new_button">
 						<property name="visible">False</property>
-						<property name="label">New</property>
-						<signal name="clicked" handler="on_new_button_clicked" />
+						<property name="label">gtk-add</property>
+						<property name="use_stock">True</property>
+						<property name="always_show_image">True</property>
+						<signal name="clicked" handler="on_new_entry" />
 					</object>
 				</child>
  				<child type="title">
-					<object class="GtkButton" id="lock_button">
-						<property name="visible">False</property>
-						<property name="label">Lock</property>
-						<signal name="clicked" handler="on_lock_button_clicked" />
-					</object>
-				</child>
-
-				<child>
-					<object class="GtkMenuButton">
+					<object class="GtkBox">
 						<property name="visible">True</property>
+						<property name="orientation">horizontal</property>
+						<child>
+							<object class="GtkButton" id="lock_button">
+								<property name="visible">False</property>
+								<property name="label">Lock</property>
+								<signal name="clicked" handler="on_lock_button_clicked" />
+							</object>
+						</child>
+						<child>
+							<object class="GtkLabel" id="title_label">
+								<property name="visible">True</property>
+								<property name="label">Parole</property>
+							</object>
+						</child>
 					</object>
-					<packing>
-
-					</packing>
 				</child>
-
-				<!-- <child> -->
-				<!-- 	<object class="GtkButton" id="passwords_visible_button"> -->
-				<!-- 		<property name="visible">True</property> -->
-				<!-- 		<property name="label">Show passwords</property> -->
-				<!-- 		<signal name="clicked" handler="on_passwords_visible_button_clicked" /> -->
-				<!-- 	</object> -->
-				<!-- </child> -->
+				<child>
+					<object class="GtkMenuButton" id="app_menu_button">
+						<property name="visible">True</property>
+						<signal name="activate" handler="on_menu_button_clicked" />
+					</object>
+				</child>
  			</object>
 		</child>
 		<child>
@@ -100,7 +103,7 @@
 						<child>
 							<object class="GtkHPaned" id="hpaned">
 								<property name="visible">True</property>
-								<property name="position">100</property>
+								<property name="position">180</property>
 								<property name="position-set">True</property>
 
 								<child>

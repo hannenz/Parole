@@ -6,7 +6,7 @@ namespace Parole {
 	  * - On show, focus the entry
 	  */
 
-	[GtkTemplate (ui="/de/hannenz/parole/password_generator.ui")]
+	[GtkTemplate (ui="/de/hannenz/parole/ui/password_generator.ui")]
 	public class PasswordGenerator : Gtk.Popover {
 
 		[GtkChild]
@@ -15,16 +15,38 @@ namespace Parole {
 		[GtkChild]
 		private Gtk.SpinButton generator_spin_button;
 
-		public PasswordGenerator () {
-			debug ("Creating Generator Popover");
-			generated_password_entry.activate.connect ( apply );
-		}
+		[GtkChild]
+		private Gtk.CheckButton use_symbols_cb;
+
+		/* [GtkChild] */
+		/* private Gtk.CheckButton secure_cb; */
+
+
+
+		protected bool use_symbols = false;
+
+		protected bool secure = false;
 
 
 		[GtkCallback]
-		private void on_generator_spin_button_value_changed () {
+		private void apply () {
+			var secret_entry = this.get_relative_to () as Gtk.Entry;
+			secret_entry.set_text (generated_password_entry.get_text ());
+			hide ();
+		}
+
+		[GtkCallback]
+		public void cancel () {
+			hide ();
+		}
+
+		[GtkCallback]
+		private void on_change_regenerate_password () {
+			use_symbols = use_symbols_cb.get_active ();
+			/* secure = secure_cb.get_active (); */
 			regenerate_password ();
 		}
+
 
 
 		/**
@@ -34,18 +56,15 @@ namespace Parole {
 		public void regenerate_password () {
 			int exit_status;
 			string standard_output, standard_error;
-			Process.spawn_command_line_sync ("pwgen %u 1".printf (generator_spin_button.get_value_as_int ()), out standard_output,
-                                               out standard_error,
-                                               out exit_status);
 
+			string pwgen_options = "--ambiguous --capitalize --numerals --no-vowels";
+			if (use_symbols) {
+				pwgen_options += " --symbols";
+			}
+
+			string cmd = "pwgen %s %u 1".printf (pwgen_options, generator_spin_button.get_value_as_int ());
+			Process.spawn_command_line_sync (cmd, out standard_output, out standard_error, out exit_status);
 			generated_password_entry.set_text (standard_output.chomp ());
-		}
-
-		public void apply () {
-			debug ("Applying");
-			var secret_entry = this.get_relative_to () as Gtk.Entry;
-			secret_entry.set_text (generated_password_entry.get_text ());
-			hide ();
 		}
 	}
 }

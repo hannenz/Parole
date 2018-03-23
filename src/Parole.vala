@@ -56,6 +56,28 @@ namespace Parole {
 			entry.quicklist = quicklist;
 		}
 
+		protected override void startup () {
+			base.startup ();
+			var action = new GLib.SimpleAction ("preferences", null);
+			action.activate.connect (preferences);
+			add_action (action);
+
+			action = new GLib.SimpleAction ("quit", null);
+			action.activate.connect (quit);
+			add_action (action);
+
+			add_accelerator ("<Ctrl>Q", "app.quit", null);
+
+			var builder = new Gtk.Builder.from_resource ("/de/hannenz/parole/ui/app_menu.ui");
+			var app_menu = builder.get_object ("app_menu") as GLib.MenuModel;
+
+			set_app_menu (app_menu);
+		}
+
+		public void preferences () {
+			debug ("preferences: implemet me!");
+		}
+
 		public override void open (GLib.File[] files, string hint){
 			if (window == null){
 				window = new ApplicationWindow	 (this);
@@ -66,4 +88,12 @@ namespace Parole {
 			window.present();
 		}
 	}
+
+
+
+    public static int main (string[] args) {
+
+        var application = new Parole ();
+        return application.run (args);
+    }
 }

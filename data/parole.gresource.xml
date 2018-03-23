@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
 	<gresource prefix="/de/hannenz/parole">
-		<file preprocess="xml-stripblanks">window.ui</file>
-		<file preprocess="xml-stripblanks">entry_dialog.ui</file>
-		<file preprocess="xml-stripblanks">password_generator.ui</file>
+		<file preprocess="xml-stripblanks">ui/window.ui</file>
+		<file preprocess="xml-stripblanks">ui/entry_dialog.ui</file>
+		<file preprocess="xml-stripblanks">ui/password_generator.ui</file>
+		<file preprocess="xml-stripblanks">ui/app_menu.ui</file>
 		<file>parole.css</file>
+		<file>parole.png</file>
 	</gresource>
 </gresources>

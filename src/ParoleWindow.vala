@@ -3,7 +3,7 @@ using Xml;
 
 namespace Parole {
 
-	[GtkTemplate (ui="/de/hannenz/parole/window.ui")]
+	[GtkTemplate (ui="/de/hannenz/parole/ui/window.ui")]
 	public class ApplicationWindow : Gtk.ApplicationWindow {
 
 		protected Xml.Doc *XmlDoc;
@@ -30,7 +30,13 @@ namespace Parole {
 		private Gtk.Button lock_button;
 
 		[GtkChild]
+		private Gtk.Label title_label;
+
+		[GtkChild]
 		private Gtk.Button new_button;
+
+		[GtkChild]
+		private Gtk.Button app_menu_button;
 
 		[GtkChild]
 		private Gtk.TreeView passwords_treeview;
@@ -49,6 +55,7 @@ namespace Parole {
 
 		private Granite.Widgets.SourceList sourcelist;
 
+
 		/* [GtkCallback] */
 		/* private void on_passwords_visible_button_clicked (Gtk.Button button) { */
 		/* 	passwords_visible = !passwords_visible; */
@@ -64,6 +71,7 @@ namespace Parole {
 				lock_button.show ();
 				new_button.show ();
 				app_menu.show_all ();
+				title_label.hide ();
 			}
 			else {
 				stdout.printf("Wrong password, try again...!\n");
@@ -73,16 +81,20 @@ namespace Parole {
 
 		[GtkCallback]
 		public void on_lock_button_clicked () {
-			stack.set_visible_child(password_box);
-			password_entry.grab_focus();
+			stack.set_visible_child (password_box);
+			password_entry.grab_focus ();
 			new_button.hide ();
-			lock_button.hide();
-			app_menu.hide();
+			lock_button.hide ();
+			app_menu.hide ();
+			title_label.show ();
 		}
 
+
 		[GtkCallback]
-		public void on_new_button_clicked () {
-			message ("New button has been clicked");
+		public void on_menu_button_clicked () {
+			var app_menu = application.get_app_menu () as Gtk.Menu;
+		//	app_menu.popup_at_widget (app_menu_button, Gdk.Gravity.SOUTH, Gdk.Gravity.SOUTH, null);
+			app_menu.popup (null, null, null, 0, 0);
 		}
 
 		public ApplicationWindow (Gtk.Application application) {
@@ -111,20 +123,9 @@ namespace Parole {
 			selection.changed.connect(on_passwords_treeview_selection_changed);
 
 			password_column.set_cell_data_func(password_cell, (Gtk.CellLayoutDataFunc)render_password);
-
-			/* var menu = new Gtk.Menu(); */
-			/* var item = new Gtk.MenuItem.with_label("New entry"); */
-			/* item.activate.connect(on_new_entry); */
-			/* menu.add(item); */
-            /*  */
-			/* item = new Gtk.MenuItem.with_label ("Foo bar"); */
-			/* menu.add (item); */
-            /*  */
-			/* app_menu = new Granite.Widgets.AppMenu(menu); */
-			/* header.pack_end(app_menu); */
-			/* app_menu.show_all(); */
 		}
 
+		[GtkCallback]
 		private void on_new_entry() {
 			Granite.Widgets.SourceList.Item sl_item = sourcelist.selected;
 			if (sl_item != null) {
@@ -136,14 +137,24 @@ namespace Parole {
 			var response = dlg.run();
 			if (response == Gtk.ResponseType.APPLY) {
 				Xml.Node *category = get_node_for_category(sl_item.name);
-				Xml.Node *entry = create_password_entry_xml(
-					dlg.pwEntry.title,
-					dlg.pwEntry.url,
-					dlg.pwEntry.username,
-					dlg.pwEntry.secret,
-					dlg.pwEntry.remark
-				);
+
+				/* Xml.Node *entry = create_password_entry_xml( */
+				/* 	dlg.pwEntry.title, */
+				/* 	dlg.pwEntry.url, */
+				/* 	dlg.pwEntry.username, */
+				/* 	dlg.pwEntry.secret, */
+				/* 	dlg.pwEntry.remark */
+				/* ); */
+
+				Xml.Ns ns = new Xml.Ns(null, "", null);
+				Xml.Node *entry = new Xml.Node (ns, "entry");
+				entry->new_prop ("title", dlg.pwEntry.title);
+				entry->new_text_child (ns, "url", dlg.pwEntry.url);
+				entry->new_text_child (ns, "username", dlg.pwEntry.username);
+				entry->new_text_child (ns, "secret", dlg.pwEntry.secret);
+				entry->new_text_child (ns, "remark", dlg.pwEntry.remark);
 				category->add_child(entry);
+				XmlDoc->save_format_file_enc ("/home/hannenz/Parole/passwords.xml", "UTF-8", true);
 
 				Gtk.TreeIter iter;
 				passwords_liststore.append(out iter);
@@ -178,13 +189,14 @@ namespace Parole {
 		}
 
 		private Xml.Node* create_password_entry_xml(string title, string url, string username, string secret, string remark) {
-			Xml.Ns ns = new Xml.Ns(null, "", "Parole");
-			Xml.Node *entry = new Xml.Node(ns, "entry");
-			entry->new_prop("title", title);
-			entry->new_text_child(ns, "url", url);
-			entry->new_text_child(ns, "username", username);
-			entry->new_text_child(ns, "secret", secret);
-			entry->new_text_child(ns, "remark", remark);
+			Xml.Ns ns = new Xml.Ns(null, "", "parole");
+			/* ns.type = Xml.ElementType.ELEMENT_NODE; */
+			Xml.Node *entry = new Xml.Node (ns, "entry");
+			entry->new_prop ("title", title);
+			entry->new_text_child (ns, "url", url);
+			entry->new_text_child (ns, "username", username);
+			entry->new_text_child (ns, "secret", secret);
+			entry->new_text_child (ns, "remark", remark);
 			return entry;
 		}
 
@@ -308,7 +320,6 @@ namespace Parole {
 
 			if (selection.get_selected(out model, out iter)) {
 				model.get(iter, 0, out title);
-				debug (title + " has been selected");
 			}
 		}
 

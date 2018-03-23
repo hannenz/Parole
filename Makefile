@@ -1,12 +1,12 @@
 PACKAGES 	= glib-2.0 gtk+-3.0 granite libxml-2.0 libarchive unity libsoup-2.4
 SOURCES 	= $(wildcard src/*.vala)
-UI_SOURCES  = $(wildcard data/*.ui)
+UI_SOURCES  = $(wildcard data/ui/*.ui)
 PRG 		= de.hannenz.parole
 
 #CC 			= gcc
 VALAC 		= valac
 #CFLAGS 		= -W -Wall
-VALAFLAGS	= --target-glib=2.38 -X -lssl -X -lcrypto -X -lgmp -X -g --save-temps
+VALAFLAGS	= --target-glib=2.38 -X -lssl -X -lcrypto -X -lgmp -X -g 
 #LDFLAGS		=
 
 VALAFLAGS 	+= $(PACKAGES:%=--pkg=%)
@@ -40,3 +40,6 @@ run: $(PRG)
 
 rundebug: $(PRG)
 	G_MESSAGES_DEBUG=all ./$(PRG)
+
+clean:
+	rm src/*.vala.c
