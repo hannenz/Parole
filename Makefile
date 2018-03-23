@@ -1,5 +1,6 @@
 PACKAGES 	= glib-2.0 gtk+-3.0 granite libxml-2.0 libarchive unity libsoup-2.4
 SOURCES 	= $(wildcard src/*.vala)
+UI_SOURCES  = $(wildcard data/*.ui)
 PRG 		= de.hannenz.parole
 
 #CC 			= gcc
@@ -27,10 +28,15 @@ VALAFLAGS 	+= $(PACKAGES:%=--pkg=%)
 $(PRG):	$(SOURCES) src/generator.c src/resources.c
 	$(VALAC) -o $@ $^  $(VALAFLAGS) --gresources data/parole.gresource.xml 
 
-src/resources.c: data/window.ui data/entry_dialog.ui data/parole.gresource.xml data/parole.css
+src/resources.c: $(UI_SOURCES) data/parole.gresource.xml data/parole.css
 	cd data ; glib-compile-resources parole.gresource.xml --target=../src/resources.c --generate-source
 
 install: $(PRG)
 	install -m 644 data/de.hannenz.parole.desktop /usr/share/applications/
 	install $(PRG) /usr/local/bin/
 
+run: $(PRG)
+	./$(PRG)
+
+rundebug: $(PRG)
+	G_MESSAGES_DEBUG=all ./$(PRG)

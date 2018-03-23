@@ -3,6 +3,7 @@
 	<gresource prefix="/de/hannenz/parole">
 		<file preprocess="xml-stripblanks">window.ui</file>
 		<file preprocess="xml-stripblanks">entry_dialog.ui</file>
+		<file preprocess="xml-stripblanks">password_generator.ui</file>
 		<file>parole.css</file>
 	</gresource>
 </gresources>

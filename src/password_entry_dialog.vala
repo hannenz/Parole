@@ -26,46 +26,17 @@ namespace Parole {
 		[GtkChild]
 		private Gtk.Label pwned_label;
 
+		private PasswordGenerator generator;
+
 		private string category;
 
 		public PasswordEntry pwEntry;
 
-		[GtkChild]
-		private Gtk.Popover generator;
-
-		[GtkChild]
-		private Gtk.Entry generated_password_entry;
-
-		[GtkChild]
-		private Gtk.SpinButton generator_spin_button;
-
-		/* [GtkCallback] */
-		/* private void on_pwned_button_clicked () { */
-		/* } */
-
 		[GtkCallback]
 		private void on_generate_password_button_clicked () {
-			/* var popover = new Popover (secretEntry); */
-			var label = new Gtk.Label ("Generate a password");
-			/* popover.set_border (10); */
+			debug ("Button has been clicked");
+			generator.regenerate_password ();
 			generator.show_all ();
-			regenerate_password ();
-		}
-
-		[GtkCallback]
-		private void on_generator_spin_button_value_changed () {
-			regenerate_password ();
-
-		}
-
-		private void regenerate_password () {
-			int exit_status;
-			string standard_output, standard_error;
-			Process.spawn_command_line_sync ("pwgen %u 1".printf (generator_spin_button.get_value_as_int ()), out standard_output,
-                                               out standard_error,
-                                               out exit_status);
-
-			generated_password_entry.set_text (standard_output.chomp ());
 		}
 
 		private void check_if_pawned () {
@@ -74,7 +45,7 @@ namespace Parole {
 			if (password.length == 0) {
 				return;
 			}
-			message ("Checking password:  %s\n".printf (password));
+			debug ("Checking password:  %s\n".printf (password));
 
 			// Get SHA1 hash of password
 			var hash = GLib.Checksum.compute_for_string (ChecksumType.SHA1, password);
@@ -110,7 +81,19 @@ namespace Parole {
 			}
 			this.response.connect(on_response);
 
+			generator = new PasswordGenerator ();
+			generator.set_relative_to (secretEntry);
 			check_if_pawned ();
+
+			secretEntry.focus_in_event.connect ( () => {
+				secretEntry.set_visibility (true);
+				return false;
+			});
+			secretEntry.focus_out_event.connect ( () => {
+				secretEntry.set_visibility (false);
+				return false;
+			});
+
 		}
 
 		private void create_widgets () {
@@ -122,6 +105,7 @@ namespace Parole {
 			grid.set_row_homogeneous(false);
 
 			grid.attach(new Gtk.Label("Title"), 0, 0, 1, 1);
+
 			titleEntry = new Gtk.Entry();
 			grid.attach(titleEntry, 1, 0, 1, 1);
 			if (pwEntry != null) {
