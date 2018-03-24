@@ -26,6 +26,9 @@ namespace Parole {
 		[GtkChild]
 		private Gtk.Label pwned_label;
 
+		[GtkChild]
+		private Gtk.Image image;
+
 		private PasswordGenerator generator;
 
 		private string category;
@@ -93,6 +96,8 @@ namespace Parole {
 				/* secretEntry.set_visibility (false); */
 				return false;
 			});
+
+			image.set_from_pixbuf (this.pwEntry.pixbuf);
 
 		}
 

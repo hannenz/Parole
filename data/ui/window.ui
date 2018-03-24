@@ -113,15 +113,28 @@
 										<property name="vscrollbar-policy">automatic</property>
 									</object>
 								</child>
-								<child>
-									<object class="GtkListBox" id="passwords_listbox">
-										<property name="visible">True</property>
-									</object>
-								</child>
+								<!-- <child> -->
+								<!-- 	<object class="GtkListBox" id="passwords_listbox"> -->
+								<!-- 		<property name="visible">False</property> -->
+								<!-- 	</object> -->
+								<!-- </child> -->
 								<child>
 									<object class="GtkTreeView" id="passwords_treeview">
-										<property name="visible">False</property>
+										<property name="visible">True</property>
 										<property name="rules_hint">True</property>
+										<child>
+											<object class="GtkTreeViewColumn">
+												<property name="title">Image</property>
+												<property name="resizable">True</property>
+												<child>
+													<object class="GtkCellRendererPixbuf" />
+													<attributes>
+														<attribute name="pixbuf">6</attribute>
+													</attributes>
+												</child>
+											</object>
+										</child>
+
 										<child>
 											<object class="GtkTreeViewColumn">
 												<property name="title">Title</property>

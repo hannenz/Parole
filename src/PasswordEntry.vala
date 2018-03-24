@@ -12,6 +12,8 @@ namespace Parole {
 
 		public string remark;
 
+		public Gdk.Pixbuf pixbuf;
+
 		public Xml.Node xml_node;
 
 	}
