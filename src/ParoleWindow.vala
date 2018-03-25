@@ -291,12 +291,13 @@ namespace Parole {
 					passwordEntry.secret = findSubNode(iter, "secret");
 					passwordEntry.remark = findSubNode(iter, "remark");
 
+					var image_str = findSubNode (iter, "image");
+
 					try {
-						var str = "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAABp1BMVEUAlu4AmfYAnfQAnvUPmvIAn/YAoPcUm/MAofkAovMAo/QYnPQApPUZnu8ApfYcn/AAp/ccoewfoPIFqPgiofMlovQlpO8no/UnpfARrPYppvEsp/MuqPQwqfUvq/AyqvYxrPEzrvI1r/M3sPU5sfZHsPA8s/g7tfNKsvI/t/VMtPNNtfRMt/BPtvZPufJQuvNSu/RTvPVWvvhhvPZiwPRlv/pjwfVlwvZmw/duw/FvxPNwxfRyxvVzx/Z0yPd7yPF8yfJ9yvN+y/SIy/aKzPeCz/iIzvKJ0POK0fSTz/SL0vWU0PWT1PKb0vKP1fmX0/mU1fOd1PSY1fqe1fWY2Pan2PKo2fSp2/Wq3Par3fes3viz3Piy3/Oz4PS23/q04fW73/W84Pe24/i94vi75PO+4/m/5PrD5PTG5/fI6PjN6vXL6/zQ7PfR7fjY7fna7vrU8fvc8P3h8vnj8/rk9Pvn9PXl9fzo9fbp9vfs9f3t9v/n+P7w9vju9//o+f/y9/ns+vvz+Pv0+fz1+v34+vf2+/76/Pn7/fr4/v/5///8//v///b+//wWgEtLAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDGAcULFxsuLoAAAJASURBVFjD7dfrbxJBEABw3JC5hPNKHG+l5qgoLYpWS31bU6s11dD6wAYlVqsVY30jGoot8VmsHon7R3tWagvs7c5F0083H/hAhh+7c+zOELH/U0RCKIRCKIS2DQLTOZAeQPNfIWu0+v7T58bSLRvab8SUUJ+c4Zma2IhJbqOdSJXzoIAyT1DmsHFXbEZ5z9HphdYKKlYUXRS3mcQ5Kzqi1fJesqoaMS+hyLsdTIveuGrwNPeDcPh3ymL3g0k87mHcwwPFd+O+K8LT61n1ZCeUWu2Blte8UjF/6OSftG/TbGsljwlZ3FUUG1MbWfXs5texgsy5z1XFjjT/Js4fdNrLMp5KnFmm/GXDpS31rBYcy/QsoyyBTM0RiXWmN+Zy3tauSCBLDaF9rucjX99UJBCqIScKdwQlGurTD1P10dQjClQBJYQ5Ib7XKNBDrt4aE8S4qbnYjHtE6LwGwv00Z3VId9VingRVmfbOjr2kQNdBf/lDmQD1I6GLsInXOqdkENoRZpx9F5aVjjtI6WtQ0m5sIUFqkMkvGsfNIAnCGxqoaBJbtvlAfV6jnNz7ZxROcyjAEAGHVlp+0EUIMo1A/MhkQVr0iaBjDbLnskVdDjZoIThn1iTMj2tmAAiNHdmZt7JtfczFiaOfs7vPcQZnf8rLXNtFnSFx5IXr+9hrYyZ9GMX+YZ+T3zyRxEBTLUZH5pe6H9eHZ2MMAo/HwHYenyq9arQbYWUuf2qvlvH9HSV43LIgDl6Hj4X/RUIohEJoW6BfurWfi2lw4lsAAAAASUVORK5CYII=";
+						/* var str = "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAABp1BMVEUAlu4AmfYAnfQAnvUPmvIAn/YAoPcUm/MAofkAovMAo/QYnPQApPUZnu8ApfYcn/AAp/ccoewfoPIFqPgiofMlovQlpO8no/UnpfARrPYppvEsp/MuqPQwqfUvq/AyqvYxrPEzrvI1r/M3sPU5sfZHsPA8s/g7tfNKsvI/t/VMtPNNtfRMt/BPtvZPufJQuvNSu/RTvPVWvvhhvPZiwPRlv/pjwfVlwvZmw/duw/FvxPNwxfRyxvVzx/Z0yPd7yPF8yfJ9yvN+y/SIy/aKzPeCz/iIzvKJ0POK0fSTz/SL0vWU0PWT1PKb0vKP1fmX0/mU1fOd1PSY1fqe1fWY2Pan2PKo2fSp2/Wq3Par3fes3viz3Piy3/Oz4PS23/q04fW73/W84Pe24/i94vi75PO+4/m/5PrD5PTG5/fI6PjN6vXL6/zQ7PfR7fjY7fna7vrU8fvc8P3h8vnj8/rk9Pvn9PXl9fzo9fbp9vfs9f3t9v/n+P7w9vju9//o+f/y9/ns+vvz+Pv0+fz1+v34+vf2+/76/Pn7/fr4/v/5///8//v///b+//wWgEtLAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDGAcULFxsuLoAAAJASURBVFjD7dfrbxJBEABw3JC5hPNKHG+l5qgoLYpWS31bU6s11dD6wAYlVqsVY30jGoot8VmsHon7R3tWagvs7c5F0083H/hAhh+7c+zOELH/U0RCKIRCKIS2DQLTOZAeQPNfIWu0+v7T58bSLRvab8SUUJ+c4Zma2IhJbqOdSJXzoIAyT1DmsHFXbEZ5z9HphdYKKlYUXRS3mcQ5Kzqi1fJesqoaMS+hyLsdTIveuGrwNPeDcPh3ymL3g0k87mHcwwPFd+O+K8LT61n1ZCeUWu2Blte8UjF/6OSftG/TbGsljwlZ3FUUG1MbWfXs5texgsy5z1XFjjT/Js4fdNrLMp5KnFmm/GXDpS31rBYcy/QsoyyBTM0RiXWmN+Zy3tauSCBLDaF9rucjX99UJBCqIScKdwQlGurTD1P10dQjClQBJYQ5Ib7XKNBDrt4aE8S4qbnYjHtE6LwGwv00Z3VId9VingRVmfbOjr2kQNdBf/lDmQD1I6GLsInXOqdkENoRZpx9F5aVjjtI6WtQ0m5sIUFqkMkvGsfNIAnCGxqoaBJbtvlAfV6jnNz7ZxROcyjAEAGHVlp+0EUIMo1A/MhkQVr0iaBjDbLnskVdDjZoIThn1iTMj2tmAAiNHdmZt7JtfczFiaOfs7vPcQZnf8rLXNtFnSFx5IXr+9hrYyZ9GMX+YZ+T3zyRxEBTLUZH5pe6H9eHZ2MMAo/HwHYenyq9arQbYWUuf2qvlvH9HSV43LIgDl6Hj4X/RUIohEJoW6BfurWfi2lw4lsAAAAASUVORK5CYII="; */
 
 						var loader = new Gdk.PixbufLoader ();
-						/* var loader = new Gdk.PixbufLoader.with_type ("png"); */
-						loader.write (Base64.decode (str));
+						loader.write (Base64.decode (image_str));
 						loader.close ();
 						passwordEntry.pixbuf = loader.get_pixbuf ();
 					}
@@ -398,6 +399,30 @@ namespace Parole {
 								break;
 							case "remark":
 								subnode->set_content (dlg.pwEntry.remark);
+								break;
+							case "image":
+								debug (dlg.pwEntry.pixbuf.get_width ().to_string ());
+								debug (dlg.pwEntry.pixbuf.get_height ().to_string ());
+								var h = dlg.pwEntry.pixbuf.get_height ();
+								var r = dlg.pwEntry.pixbuf.get_rowstride ();
+								var w = dlg.pwEntry.pixbuf.get_width ();
+								var b = dlg.pwEntry.pixbuf.get_bits_per_sample ();
+								var n = dlg.pwEntry.pixbuf.get_n_channels ();
+
+								var size = r * (h - 1);
+								size += w  * ((n * b) + 7 / 8);
+								debug (size.to_string ());
+
+								subnode->set_prop ("width", dlg.pwEntry.pixbuf.get_width ().to_string ());
+								subnode->set_prop ("height", dlg.pwEntry.pixbuf.get_height ().to_string ());
+								subnode->set_prop ("rowstride", dlg.pwEntry.pixbuf.get_rowstride ().to_string ());
+								subnode->set_prop ("has_alpha", dlg.pwEntry.pixbuf.get_has_alpha () ? "1" : "0");
+								var data = dlg.pwEntry.pixbuf.get_pixels ();
+								/* var len = dlg.pwEntry.pixbuf.get_byte_length (); */
+								/* debug (len.to_string ()); */
+								/* data[len] = '\0'; */
+
+								/* subnode->set_content (Base64.encode (data)); */
 								break;
 						}
 					}

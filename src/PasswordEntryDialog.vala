@@ -130,8 +130,16 @@ namespace Parole {
 
 			if (dlg.run () == Gtk.ResponseType.ACCEPT) {
 
+				var filename = dlg.get_filename ();
+
+				debug (filename);
+
+				pwEntry.pixbuf = new Gdk.Pixbuf.from_file_at_size (filename, -1, 120);
+				image.set_from_pixbuf (pwEntry.pixbuf);
 			}
+
 			dlg.close ();
+			dlg.destroy ();
 		}
 	}
 }
