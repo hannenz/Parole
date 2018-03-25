@@ -97,69 +97,9 @@ namespace Parole {
 				return false;
 			});
 
-			image.set_from_pixbuf (this.pwEntry.pixbuf);
-
-		}
-
-		private void create_widgets () {
-
-			var grid = new Gtk.Grid();
-			grid.set_column_spacing(10);
-			grid.set_row_spacing(10);
-			grid.set_column_homogeneous(true);
-			grid.set_row_homogeneous(false);
-
-			grid.attach(new Gtk.Label("Title"), 0, 0, 1, 1);
-
-			titleEntry = new Gtk.Entry();
-			grid.attach(titleEntry, 1, 0, 1, 1);
-			if (pwEntry != null) {
-				titleEntry.set_text(pwEntry.title);
-			}
-
-			grid.attach(new Gtk.Label("URL"), 0, 1, 1, 1);
-			urlEntry = new Gtk.Entry();
-			grid.attach(urlEntry, 1, 1, 1, 1);
-			if (pwEntry != null) {
-				urlEntry.set_text(pwEntry.url);
-			}
-
-			grid.attach(new Gtk.Label("Username"), 0, 2, 1, 1);
-			usernameEntry = new Gtk.Entry();
-			grid.attach(usernameEntry, 1, 2, 1, 1);
-			if (pwEntry != null) {
-				usernameEntry.set_text(pwEntry.username);
-			}
-
-			grid.attach(new Gtk.Label("Secret"), 0, 3, 1, 1);
-			secretEntry = new Gtk.Entry();
-			grid.attach(secretEntry, 1, 3, 1, 1);
-			if (pwEntry != null) {
-				secretEntry.set_text(pwEntry.secret);
-			}
-
-			grid.attach(new Gtk.Label("Remark"), 0, 4, 1, 1);
-			remarkEntry = new Gtk.TextView();
-			remarkEntry.set_wrap_mode(WrapMode.WORD);
-
-			var swin = new Gtk.ScrolledWindow(null, null);
-			swin.add(remarkEntry);
-			grid.attach(swin, 1, 4, 1, 1);
-			if (pwEntry != null) {
-				remarkEntry.buffer.text = pwEntry.remark;
-			}
-
-			Gtk.Box contentArea = get_content_area() as Gtk.Box;
-			contentArea.pack_start(grid);
-
-			add_button("_Save", Gtk.ResponseType.APPLY);
-			add_button("_Cancel", Gtk.ResponseType.CANCEL);
-
-		}
-
-		private void connect_signals() {
-
-			this.response.connect(on_response);
+			/* if (this.pwEntry.pixbuf != null) { */
+			/* 	image.set_from_pixbuf (this.pwEntry.pixbuf); */
+			/* } */
 
 		}
 
@@ -177,6 +117,21 @@ namespace Parole {
 					this.pwEntry.remark = remarkEntry.buffer.text;
 					break;
 			}
+		}
+
+		[GtkCallback]
+		private void select_image_from_disk () {
+			var  dlg = new Gtk.FileChooserDialog ("Select image", this, Gtk.FileChooserAction.OPEN, "_Cancel", Gtk.ResponseType.CANCEL, "_Open", Gtk.ResponseType.ACCEPT);
+
+			var filter = new Gtk.FileFilter ();
+			dlg.set_filter (filter);
+			filter.add_mime_type ("image/jpeg");
+			filter.add_mime_type ("image/png");
+
+			if (dlg.run () == Gtk.ResponseType.ACCEPT) {
+
+			}
+			dlg.close ();
 		}
 	}
 }

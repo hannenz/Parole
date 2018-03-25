@@ -63,8 +63,13 @@ namespace Parole {
 			}
 
 			string cmd = "pwgen %s %u 1".printf (pwgen_options, generator_spin_button.get_value_as_int ());
-			Process.spawn_command_line_sync (cmd, out standard_output, out standard_error, out exit_status);
-			generated_password_entry.set_text (standard_output.chomp ());
+			try {
+				Process.spawn_command_line_sync (cmd, out standard_output, out standard_error, out exit_status);
+				generated_password_entry.set_text (standard_output.chomp ());
+			}
+			catch (Error e) {
+				stderr.printf ("Error: %s\n", e.message);
+			}
 		}
 	}
 }

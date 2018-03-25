@@ -9,9 +9,6 @@ namespace Parole {
 		protected Xml.Doc *XmlDoc;
 
 		[GtkChild]
-		private Gtk.HeaderBar header;
-
-		[GtkChild]
 		private Gtk.Stack stack;
 
 		[GtkChild]
@@ -58,18 +55,15 @@ namespace Parole {
 
 		private Granite.Widgets.SourceList sourcelist;
 
+		[GtkChild]
+		private Gtk.Label master_password_message;
 
-		/* [GtkCallback] */
-		/* private void on_passwords_visible_button_clicked (Gtk.Button button) { */
-		/* 	passwords_visible = !passwords_visible; */
-		/* //	button.set_label(passwords_visible ? "Hide passwords" : "Show passwords"); */
-		/* 	button.set_label(passwords_visible.to_string()); */
-		/* } */
+
 
 		[GtkCallback]
 		public void on_password_entry_activated (Gtk.Entry entry) {
 			/* stdout.printf ("You entered: %s\n", entry.get_text ()); */
-			if ( entry.get_text () == "masterpassword" || true){
+			if ( entry.get_text () == "abc"){
 				stack.set_visible_child (content_box);	
 				lock_button.show ();
 				new_button.show ();
@@ -77,7 +71,8 @@ namespace Parole {
 				title_label.hide ();
 			}
 			else {
-				stdout.printf("Wrong password, try again...!\n");
+				master_password_message.set_markup ("<span color=\"#c00000\" font_weight=\"normal\">Wrong password, please try again…</span>");
+				master_password_message.show ();
 			}
 			password_entry.set_text("");
 		}
@@ -156,7 +151,7 @@ namespace Parole {
 				/* 	dlg.pwEntry.remark */
 				/* ); */
 
-				Xml.Ns ns = new Xml.Ns(null, "", null);
+				Xml.Ns ns = new Xml.Ns(null, "", "");
 				Xml.Node *entry = new Xml.Node (ns, "entry");
 				entry->new_prop ("title", dlg.pwEntry.title);
 				entry->new_text_child (ns, "url", dlg.pwEntry.url);
@@ -296,13 +291,18 @@ namespace Parole {
 					passwordEntry.secret = findSubNode(iter, "secret");
 					passwordEntry.remark = findSubNode(iter, "remark");
 
-					var str = "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAABp1BMVEUAlu4AmfYAnfQAnvUPmvIAn/YAoPcUm/MAofkAovMAo/QYnPQApPUZnu8ApfYcn/AAp/ccoewfoPIFqPgiofMlovQlpO8no/UnpfARrPYppvEsp/MuqPQwqfUvq/AyqvYxrPEzrvI1r/M3sPU5sfZHsPA8s/g7tfNKsvI/t/VMtPNNtfRMt/BPtvZPufJQuvNSu/RTvPVWvvhhvPZiwPRlv/pjwfVlwvZmw/duw/FvxPNwxfRyxvVzx/Z0yPd7yPF8yfJ9yvN+y/SIy/aKzPeCz/iIzvKJ0POK0fSTz/SL0vWU0PWT1PKb0vKP1fmX0/mU1fOd1PSY1fqe1fWY2Pan2PKo2fSp2/Wq3Par3fes3viz3Piy3/Oz4PS23/q04fW73/W84Pe24/i94vi75PO+4/m/5PrD5PTG5/fI6PjN6vXL6/zQ7PfR7fjY7fna7vrU8fvc8P3h8vnj8/rk9Pvn9PXl9fzo9fbp9vfs9f3t9v/n+P7w9vju9//o+f/y9/ns+vvz+Pv0+fz1+v34+vf2+/76/Pn7/fr4/v/5///8//v///b+//wWgEtLAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDGAcULFxsuLoAAAJASURBVFjD7dfrbxJBEABw3JC5hPNKHG+l5qgoLYpWS31bU6s11dD6wAYlVqsVY30jGoot8VmsHon7R3tWagvs7c5F0083H/hAhh+7c+zOELH/U0RCKIRCKIS2DQLTOZAeQPNfIWu0+v7T58bSLRvab8SUUJ+c4Zma2IhJbqOdSJXzoIAyT1DmsHFXbEZ5z9HphdYKKlYUXRS3mcQ5Kzqi1fJesqoaMS+hyLsdTIveuGrwNPeDcPh3ymL3g0k87mHcwwPFd+O+K8LT61n1ZCeUWu2Blte8UjF/6OSftG/TbGsljwlZ3FUUG1MbWfXs5texgsy5z1XFjjT/Js4fdNrLMp5KnFmm/GXDpS31rBYcy/QsoyyBTM0RiXWmN+Zy3tauSCBLDaF9rucjX99UJBCqIScKdwQlGurTD1P10dQjClQBJYQ5Ib7XKNBDrt4aE8S4qbnYjHtE6LwGwv00Z3VId9VingRVmfbOjr2kQNdBf/lDmQD1I6GLsInXOqdkENoRZpx9F5aVjjtI6WtQ0m5sIUFqkMkvGsfNIAnCGxqoaBJbtvlAfV6jnNz7ZxROcyjAEAGHVlp+0EUIMo1A/MhkQVr0iaBjDbLnskVdDjZoIThn1iTMj2tmAAiNHdmZt7JtfczFiaOfs7vPcQZnf8rLXNtFnSFx5IXr+9hrYyZ9GMX+YZ+T3zyRxEBTLUZH5pe6H9eHZ2MMAo/HwHYenyq9arQbYWUuf2qvlvH9HSV43LIgDl6Hj4X/RUIohEJoW6BfurWfi2lw4lsAAAAASUVORK5CYII=";
+					try {
+						var str = "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAABp1BMVEUAlu4AmfYAnfQAnvUPmvIAn/YAoPcUm/MAofkAovMAo/QYnPQApPUZnu8ApfYcn/AAp/ccoewfoPIFqPgiofMlovQlpO8no/UnpfARrPYppvEsp/MuqPQwqfUvq/AyqvYxrPEzrvI1r/M3sPU5sfZHsPA8s/g7tfNKsvI/t/VMtPNNtfRMt/BPtvZPufJQuvNSu/RTvPVWvvhhvPZiwPRlv/pjwfVlwvZmw/duw/FvxPNwxfRyxvVzx/Z0yPd7yPF8yfJ9yvN+y/SIy/aKzPeCz/iIzvKJ0POK0fSTz/SL0vWU0PWT1PKb0vKP1fmX0/mU1fOd1PSY1fqe1fWY2Pan2PKo2fSp2/Wq3Par3fes3viz3Piy3/Oz4PS23/q04fW73/W84Pe24/i94vi75PO+4/m/5PrD5PTG5/fI6PjN6vXL6/zQ7PfR7fjY7fna7vrU8fvc8P3h8vnj8/rk9Pvn9PXl9fzo9fbp9vfs9f3t9v/n+P7w9vju9//o+f/y9/ns+vvz+Pv0+fz1+v34+vf2+/76/Pn7/fr4/v/5///8//v///b+//wWgEtLAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDGAcULFxsuLoAAAJASURBVFjD7dfrbxJBEABw3JC5hPNKHG+l5qgoLYpWS31bU6s11dD6wAYlVqsVY30jGoot8VmsHon7R3tWagvs7c5F0083H/hAhh+7c+zOELH/U0RCKIRCKIS2DQLTOZAeQPNfIWu0+v7T58bSLRvab8SUUJ+c4Zma2IhJbqOdSJXzoIAyT1DmsHFXbEZ5z9HphdYKKlYUXRS3mcQ5Kzqi1fJesqoaMS+hyLsdTIveuGrwNPeDcPh3ymL3g0k87mHcwwPFd+O+K8LT61n1ZCeUWu2Blte8UjF/6OSftG/TbGsljwlZ3FUUG1MbWfXs5texgsy5z1XFjjT/Js4fdNrLMp5KnFmm/GXDpS31rBYcy/QsoyyBTM0RiXWmN+Zy3tauSCBLDaF9rucjX99UJBCqIScKdwQlGurTD1P10dQjClQBJYQ5Ib7XKNBDrt4aE8S4qbnYjHtE6LwGwv00Z3VId9VingRVmfbOjr2kQNdBf/lDmQD1I6GLsInXOqdkENoRZpx9F5aVjjtI6WtQ0m5sIUFqkMkvGsfNIAnCGxqoaBJbtvlAfV6jnNz7ZxROcyjAEAGHVlp+0EUIMo1A/MhkQVr0iaBjDbLnskVdDjZoIThn1iTMj2tmAAiNHdmZt7JtfczFiaOfs7vPcQZnf8rLXNtFnSFx5IXr+9hrYyZ9GMX+YZ+T3zyRxEBTLUZH5pe6H9eHZ2MMAo/HwHYenyq9arQbYWUuf2qvlvH9HSV43LIgDl6Hj4X/RUIohEJoW6BfurWfi2lw4lsAAAAASUVORK5CYII=";
 
-					var loader = new Gdk.PixbufLoader ();
-					/* var loader = new Gdk.PixbufLoader.with_type ("png"); */
-					loader.write (Base64.decode (str));
-					loader.close ();
-					passwordEntry.pixbuf = loader.get_pixbuf ();
+						var loader = new Gdk.PixbufLoader ();
+						/* var loader = new Gdk.PixbufLoader.with_type ("png"); */
+						loader.write (Base64.decode (str));
+						loader.close ();
+						passwordEntry.pixbuf = loader.get_pixbuf ();
+					}
+					catch (GLib.Error e) {
+						stderr.printf ("Error: %s\n", e.message);
+					}
 
 
 					Gtk.TreeIter tree_iter;

@@ -41,9 +41,10 @@
 						<child>
 							<object class="GtkButton">
 								<property name="visible">True</property>
+								<signal name="clicked" handler="select_image_from_disk" />
 								<child>
 									<object class="GtkImage" id="image">
-										<property name="pixbuf"></property>
+										<property name="stock">gtk-missing-image</property>
 									</object>
 								</child>
 							</object>

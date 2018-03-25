@@ -93,15 +93,14 @@ namespace Parole {
 
     public static int main (string[] args) {
 
-		var favicon_scraper = new FaviconScraper ();
-		favicon_scraper.scraped.connect ( (favicon) => {
-			// do something...
-			debug ("Scraped...!");
-		});
-		favicon_scraper.scrape ("twitter.com");
-		/* favicon_scraper.get_favicon (); */
-		return 0;
-
+		/* var favicon_scraper = new FaviconScraper (); */
+		/* favicon_scraper.scraped.connect ( (favicon) => { */
+		/* 	// do something... */
+		/* 	debug ("Scraped...!"); */
+		/* }); */
+		/* favicon_scraper.scrape ("twitter.com"); */
+		/* return 0; */
+        /*  */
         var application = new Parole ();
         return application.run (args);
     }

@@ -88,6 +88,13 @@
 												<signal name="activate" handler="on_password_entry_activated" />
 											</object>
 										</child>
+										<child>
+											<object class="GtkLabel" id="master_password_message">
+												<property name="visible">False</property>
+												<property name="use_markup">True</property>
+												<!-- <property name="label">Everything ok, so far</property> -->
+											</object>
+										</child>
 									</object>
 								</child>
 							</object>
