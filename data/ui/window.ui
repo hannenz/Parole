@@ -12,6 +12,13 @@
 				<property name="visible">True</property>
 				<property name="show-close-button">True</property>
 				<child>
+					<object class="GtkButton" id="back_button">
+						<property name="visible">False</property>
+						<property name="label" translatable="yes">Back</property>
+						<signal name="clicked" handler="on_back_button_clicked" />
+					</object>
+				</child>
+				<child>
 					<object class="GtkButton" id="new_button">
 						<property name="visible">False</property>
 						<property name="label">gtk-add</property>
@@ -51,7 +58,8 @@
  			<object class="GtkStack" id="stack">
 
 				<property name="visible">True</property>
-				<property name="transition-type">slide-left</property>
+				<property name="transition-type">slide-left-right</property>
+				<!-- <property name="transition&#45;type">over&#45;left&#45;right</property> -->
 
  				<child>
  					<object class="GtkBox" id="password_box">

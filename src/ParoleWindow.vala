@@ -33,6 +33,9 @@ namespace Parole {
 		private Gtk.Button new_button;
 
 		[GtkChild]
+		private Gtk.Button back_button;
+
+		[GtkChild]
 		private Gtk.Button app_menu_button;
 
 		[GtkChild]
@@ -57,6 +60,8 @@ namespace Parole {
 
 		[GtkChild]
 		private Gtk.Label master_password_message;
+
+		protected PasswordEditView password_edit_view;
 
 
 
@@ -98,10 +103,7 @@ namespace Parole {
 		public ApplicationWindow (Gtk.Application application) {
 			GLib.Object (application: application);
 
-			// passwords_visible = false;
-
 			this.set_default_size(960,680);
-
 			this.open(GLib.File.new_for_path("/home/hannenz/Parole/passwords.xml"));
 
 			passwords_liststore = new Gtk.ListStore(
@@ -123,12 +125,11 @@ namespace Parole {
 
 			password_column.set_cell_data_func(password_cell, (Gtk.CellLayoutDataFunc)render_password);
 
-			// Fake item
-			/* var item = new ListItem (null, "Foobar"); */
-			/* passwords_listbox.add (item); */
-			/* item.show (); */
-			/* passwords_listbox.show_all (); */
+			password_edit_view = new PasswordEditView (new PasswordEntry (), "");
+			stack.add_named (password_edit_view, "edit");
 		}
+
+
 
 		[GtkCallback]
 		private void on_new_entry() {
@@ -137,42 +138,47 @@ namespace Parole {
 				debug ("New item for category: " + sl_item.name);
 			}
 
-			var dlg = new PasswordEntryDialog(new PasswordEntry(), "");
-			dlg.show_all();
-			var response = dlg.run();
-			if (response == Gtk.ResponseType.APPLY) {
+			var password_entry = new PasswordEntry ();
+			password_edit_view.set_password_entry (password_entry);
+			stack.set_visible_child_name ("edit");
+			back_button.show ();
+			return;
+
+
+
+			var dlg = new Gtk.Dialog.with_buttons ("Add a new password entry", this, 0, "_Cancel", Gtk.ResponseType.CANCEL, "_OK", Gtk.ResponseType.ACCEPT);
+			var content_area = dlg.get_content_area ();
+			var view = new PasswordEditView (password_entry, "");
+			content_area.add (view);
+
+			if (dlg.run () == Gtk.ResponseType.ACCEPT) {
+				password_entry = view.get_password_entry ();
+
 				Xml.Node *category = get_node_for_category(sl_item.name);
 
-				/* Xml.Node *entry = create_password_entry_xml( */
-				/* 	dlg.pwEntry.title, */
-				/* 	dlg.pwEntry.url, */
-				/* 	dlg.pwEntry.username, */
-				/* 	dlg.pwEntry.secret, */
-				/* 	dlg.pwEntry.remark */
-				/* ); */
-
-				Xml.Ns ns = new Xml.Ns(null, "", "");
-				Xml.Node *entry = new Xml.Node (ns, "entry");
-				entry->new_prop ("title", dlg.pwEntry.title);
-				entry->new_text_child (ns, "url", dlg.pwEntry.url);
-				entry->new_text_child (ns, "username", dlg.pwEntry.username);
-				entry->new_text_child (ns, "secret", dlg.pwEntry.secret);
-				entry->new_text_child (ns, "remark", dlg.pwEntry.remark);
-				category->add_child(entry);
+				Xml.Node *entry = new Xml.Node (null, "entry");
+				entry->new_prop ("title", password_entry.title);
+				entry->new_text_child (null, "url", password_entry.url);
+				entry->new_text_child (null, "username", password_entry.username);
+				entry->new_text_child (null, "secret", password_entry.secret);
+				entry->new_text_child (null, "remark", password_entry.remark);
+				category->add_child (entry);
 				XmlDoc->save_format_file_enc ("/home/hannenz/Parole/passwords.xml", "UTF-8", true);
 
 				Gtk.TreeIter iter;
-				passwords_liststore.append(out iter);
+				passwords_liststore.append (out iter);
 				passwords_liststore.set(
 					iter,
-					0, dlg.pwEntry.title,
-					1, dlg.pwEntry.url,
-					2, dlg.pwEntry.username,
-					3, dlg.pwEntry.secret,
-					4, dlg.pwEntry.remark
+					0, password_entry.title,
+					1, password_entry.url,
+					2, password_entry.username,
+					3, password_entry.secret,
+					4, password_entry.remark
 				);
 			}
-			dlg.destroy();
+
+			dlg.close ();
+			dlg.destroy ();
 		}
 
 		private Xml.Node* get_node_for_category(string category) {
@@ -193,23 +199,8 @@ namespace Parole {
 			return node;
 		}
 
-		private Xml.Node* create_password_entry_xml(string title, string url, string username, string secret, string remark) {
-			Xml.Ns ns = new Xml.Ns(null, "", "parole");
-			/* ns.type = Xml.ElementType.ELEMENT_NODE; */
-			Xml.Node *entry = new Xml.Node (ns, "entry");
-			entry->new_prop ("title", title);
-			entry->new_text_child (ns, "url", url);
-			entry->new_text_child (ns, "username", username);
-			entry->new_text_child (ns, "secret", secret);
-			entry->new_text_child (ns, "remark", remark);
-			return entry;
-		}
-
 		public void render_password (/*Gtk.CellLayout layout, */Gtk.CellRendererText cell, Gtk.TreeModel model, Gtk.TreeIter iter) {
-//			debug (passwords_visible.to_string());
-			/* if (passwords_visible == false && false) { */
-				cell.set_property("text", "∙∙∙∙∙∙");
-			/* } */
+			cell.set_property("text", "∙∙∙∙∙∙");
 		}
 
 		public void open (GLib.File file){
@@ -277,7 +268,6 @@ namespace Parole {
 
 			Xml.Node *node = get_node_for_category(item.name);
 
-
 			passwords_liststore.clear();
 
 			for (Xml.Node *iter = node->children; iter != null; iter = iter->next) {
@@ -294,8 +284,6 @@ namespace Parole {
 					var image_str = findSubNode (iter, "image");
 
 					try {
-						/* var str = "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAABp1BMVEUAlu4AmfYAnfQAnvUPmvIAn/YAoPcUm/MAofkAovMAo/QYnPQApPUZnu8ApfYcn/AAp/ccoewfoPIFqPgiofMlovQlpO8no/UnpfARrPYppvEsp/MuqPQwqfUvq/AyqvYxrPEzrvI1r/M3sPU5sfZHsPA8s/g7tfNKsvI/t/VMtPNNtfRMt/BPtvZPufJQuvNSu/RTvPVWvvhhvPZiwPRlv/pjwfVlwvZmw/duw/FvxPNwxfRyxvVzx/Z0yPd7yPF8yfJ9yvN+y/SIy/aKzPeCz/iIzvKJ0POK0fSTz/SL0vWU0PWT1PKb0vKP1fmX0/mU1fOd1PSY1fqe1fWY2Pan2PKo2fSp2/Wq3Par3fes3viz3Piy3/Oz4PS23/q04fW73/W84Pe24/i94vi75PO+4/m/5PrD5PTG5/fI6PjN6vXL6/zQ7PfR7fjY7fna7vrU8fvc8P3h8vnj8/rk9Pvn9PXl9fzo9fbp9vfs9f3t9v/n+P7w9vju9//o+f/y9/ns+vvz+Pv0+fz1+v34+vf2+/76/Pn7/fr4/v/5///8//v///b+//wWgEtLAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDGAcULFxsuLoAAAJASURBVFjD7dfrbxJBEABw3JC5hPNKHG+l5qgoLYpWS31bU6s11dD6wAYlVqsVY30jGoot8VmsHon7R3tWagvs7c5F0083H/hAhh+7c+zOELH/U0RCKIRCKIS2DQLTOZAeQPNfIWu0+v7T58bSLRvab8SUUJ+c4Zma2IhJbqOdSJXzoIAyT1DmsHFXbEZ5z9HphdYKKlYUXRS3mcQ5Kzqi1fJesqoaMS+hyLsdTIveuGrwNPeDcPh3ymL3g0k87mHcwwPFd+O+K8LT61n1ZCeUWu2Blte8UjF/6OSftG/TbGsljwlZ3FUUG1MbWfXs5texgsy5z1XFjjT/Js4fdNrLMp5KnFmm/GXDpS31rBYcy/QsoyyBTM0RiXWmN+Zy3tauSCBLDaF9rucjX99UJBCqIScKdwQlGurTD1P10dQjClQBJYQ5Ib7XKNBDrt4aE8S4qbnYjHtE6LwGwv00Z3VId9VingRVmfbOjr2kQNdBf/lDmQD1I6GLsInXOqdkENoRZpx9F5aVjjtI6WtQ0m5sIUFqkMkvGsfNIAnCGxqoaBJbtvlAfV6jnNz7ZxROcyjAEAGHVlp+0EUIMo1A/MhkQVr0iaBjDbLnskVdDjZoIThn1iTMj2tmAAiNHdmZt7JtfczFiaOfs7vPcQZnf8rLXNtFnSFx5IXr+9hrYyZ9GMX+YZ+T3zyRxEBTLUZH5pe6H9eHZ2MMAo/HwHYenyq9arQbYWUuf2qvlvH9HSV43LIgDl6Hj4X/RUIohEJoW6BfurWfi2lw4lsAAAAASUVORK5CYII="; */
-
 						var loader = new Gdk.PixbufLoader ();
 						loader.write (Base64.decode (image_str));
 						loader.close ();
@@ -318,16 +306,11 @@ namespace Parole {
 						5, iter,
 						6, passwordEntry.pixbuf
 					);
-
-					// Listbox variant:
-
-					/* debug ("Adding list item: %s".printf (passwordEntry.title)); */
-					/* var list_item = new ListItem (null, passwordEntry.title); */
-					/* passwords_listbox.add (list_item); */
-					/* list_item.show_all (); */
 				}
 			}
 		}
+
+
 
 		private string? findSubNode(Xml.Node *node, string name) {
 
@@ -341,6 +324,8 @@ namespace Parole {
 			return null;
 		}
 
+
+
 		private void on_passwords_treeview_selection_changed(Gtk.TreeSelection selection) {
 			Gtk.TreeIter iter;
 			Gtk.TreeModel model;
@@ -351,32 +336,43 @@ namespace Parole {
 			}
 		}
 
+
+
 		private void on_passwords_treeview_row_activated(Gtk.TreePath path, Gtk.TreeViewColumn column) {
 			Gtk.TreeIter iter;
-			var passwordEntry = new PasswordEntry();
+			var password_entry = new PasswordEntry();
 
 			passwords_liststore.get_iter(out iter, path);
-
 			passwords_liststore.get(iter,
-				0, out passwordEntry.title,
-				1, out passwordEntry.url,
-				2, out passwordEntry.username,
-				3, out passwordEntry.secret,
-				4, out passwordEntry.remark,
-				6, out passwordEntry.pixbuf
+				0, out password_entry.title,
+				1, out password_entry.url,
+				2, out password_entry.username,
+				3, out password_entry.secret,
+				4, out password_entry.remark,
+				6, out password_entry.pixbuf
 			);
 
 
-			var dlg = new PasswordEntryDialog(passwordEntry, "");
-			dlg.show_all();
-			var response = dlg.run();
-			if (response == Gtk.ResponseType.APPLY) {
+			password_edit_view.set_password_entry (password_entry);
+			stack.set_visible_child_name ("edit");
+			back_button.show ();
+
+			return;
+
+			var dlg = new Gtk.Dialog.with_buttons ("Edit password entry", this, 0, "_Cancel", Gtk.ResponseType.CANCEL, "_OK", Gtk.ResponseType.ACCEPT);
+			var view = new PasswordEditView (password_entry, "");
+			var content_area = dlg.get_content_area ();
+			content_area.add (view);
+
+			if (dlg.run () == Gtk.ResponseType.ACCEPT) {
+				password_entry = view.get_password_entry ();
+				password_entry.dump ();
 				passwords_liststore.set(iter,
-					0, dlg.pwEntry.title,
-					1, dlg.pwEntry.url,
-					2, dlg.pwEntry.username,
-					3, dlg.pwEntry.secret,
-					4, dlg.pwEntry.remark
+					0, password_entry.title,
+					1, password_entry.url,
+					2, password_entry.username,
+					3, password_entry.secret,
+					4, password_entry.remark
 				);
 
 				// Save password entry in XML doc
@@ -384,40 +380,40 @@ namespace Parole {
 				passwords_liststore.get(iter, 5, out node);
 
 				node->set_prop ("last-change", new GLib.DateTime.now_local ().to_string ());
-				node->set_prop ("title", dlg.pwEntry.title);
+				node->set_prop ("title", password_entry.title);
 				for (Xml.Node *subnode = node->children; subnode != null; subnode = subnode->next) {
 					if (subnode->type == Xml.ElementType.ELEMENT_NODE) {
 						switch (subnode->name) {
 							case "url":
-								subnode->set_content (dlg.pwEntry.url);
+								subnode->set_content (password_entry.url);
 								break;
 							case "username":
-								subnode->set_content (dlg.pwEntry.username);
+								subnode->set_content (password_entry.username);
 								break;
 							case "secret":
-								subnode->set_content (dlg.pwEntry.secret);
+								subnode->set_content (password_entry.secret);
 								break;
 							case "remark":
-								subnode->set_content (dlg.pwEntry.remark);
+								subnode->set_content (password_entry.remark);
 								break;
 							case "image":
-								debug (dlg.pwEntry.pixbuf.get_width ().to_string ());
-								debug (dlg.pwEntry.pixbuf.get_height ().to_string ());
-								var h = dlg.pwEntry.pixbuf.get_height ();
-								var r = dlg.pwEntry.pixbuf.get_rowstride ();
-								var w = dlg.pwEntry.pixbuf.get_width ();
-								var b = dlg.pwEntry.pixbuf.get_bits_per_sample ();
-								var n = dlg.pwEntry.pixbuf.get_n_channels ();
+								debug (password_entry.pixbuf.get_width ().to_string ());
+								debug (password_entry.pixbuf.get_height ().to_string ());
+								var h = password_entry.pixbuf.get_height ();
+								var r = password_entry.pixbuf.get_rowstride ();
+								var w = password_entry.pixbuf.get_width ();
+								var b = password_entry.pixbuf.get_bits_per_sample ();
+								var n = password_entry.pixbuf.get_n_channels ();
 
 								var size = r * (h - 1);
 								size += w  * ((n * b) + 7 / 8);
 								debug (size.to_string ());
 
-								subnode->set_prop ("width", dlg.pwEntry.pixbuf.get_width ().to_string ());
-								subnode->set_prop ("height", dlg.pwEntry.pixbuf.get_height ().to_string ());
-								subnode->set_prop ("rowstride", dlg.pwEntry.pixbuf.get_rowstride ().to_string ());
-								subnode->set_prop ("has_alpha", dlg.pwEntry.pixbuf.get_has_alpha () ? "1" : "0");
-								var data = dlg.pwEntry.pixbuf.get_pixels ();
+								subnode->set_prop ("width", password_entry.pixbuf.get_width ().to_string ());
+								subnode->set_prop ("height", password_entry.pixbuf.get_height ().to_string ());
+								subnode->set_prop ("rowstride", password_entry.pixbuf.get_rowstride ().to_string ());
+								subnode->set_prop ("has_alpha", password_entry.pixbuf.get_has_alpha () ? "1" : "0");
+								var data = password_entry.pixbuf.get_pixels ();
 								/* var len = dlg.pwEntry.pixbuf.get_byte_length (); */
 								/* debug (len.to_string ()); */
 								/* data[len] = '\0'; */
@@ -430,7 +426,15 @@ namespace Parole {
 				message ("Saving xml document\n");
 				XmlDoc->save_file ("/home/hannenz/Parole/passwords.xml");
 			}
-			dlg.destroy();
+
+			dlg.close ();
+			dlg.destroy ();
+		}
+
+		[GtkCallback]
+		private void on_back_button_clicked () {
+			stack.set_visible_child (content_box);
+			back_button.hide ();
 		}
 	}
 }
