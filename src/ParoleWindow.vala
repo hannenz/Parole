@@ -127,6 +127,10 @@ namespace Parole {
 
 			password_edit_view = new PasswordEditView (new PasswordEntry (), "");
 			stack.add_named (password_edit_view, "edit");
+
+#if WITH_GRANITE
+			back_button.get_style_context ().add_class (Granite.STYLE_CLASS_BACK_BUTTON);
+#endif
 		}
 
 

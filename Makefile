@@ -6,7 +6,7 @@ PRG 		= de.hannenz.parole
 #CC 			= gcc
 VALAC 		= valac
 #CFLAGS 		= -W -Wall
-VALAFLAGS	= --target-glib=2.38 -X -lssl -X -lcrypto -X -lgmp -X -g 
+VALAFLAGS	= -D WITH_GRANITE --target-glib=2.38 -X -lssl -X -lcrypto -X -lgmp -X -g 
 #LDFLAGS		=
 
 VALAFLAGS 	+= $(PACKAGES:%=--pkg=%)

@@ -32,6 +32,9 @@ namespace Parole {
 		[GtkChild]
 		private Gtk.Image image;
 
+		[GtkChild]
+		private Gtk.Image test_image;
+
 		private PasswordGenerator generator;
 
 		private string category;
@@ -66,6 +69,10 @@ namespace Parole {
 				secret_entry.set_visibility (false);
 				return false;
 			});
+
+			var pixbuf = new Gdk.Pixbuf.from_file_at_size ("/home/hannenz/avatar.png", 100, -1);
+			test_image.set_from_pixbuf (pixbuf);
+			test_image.get_style_context ().add_class (Granite.STYLE_CLASS_CARD);
 		}
 
 		private void check_if_pawned () {
