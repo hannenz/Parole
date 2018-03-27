@@ -68,6 +68,15 @@ namespace Parole {
 
 			add_accelerator ("<Ctrl>Q", "app.quit", null);
 
+			action = new GLib.SimpleAction ("add-entry", null);
+			add_action (action);
+
+			action = new GLib.SimpleAction ("edit-entry", null);
+			add_action (action);
+
+			action = new GLib.SimpleAction ("delete-entry", null);
+			add_action (action);
+
 			var builder = new Gtk.Builder.from_resource ("/de/hannenz/parole/ui/app_menu.ui");
 			var app_menu = builder.get_object ("app_menu") as GLib.MenuModel;
 
