@@ -6,6 +6,8 @@ namespace Parole {
 	[GtkTemplate (ui="/de/hannenz/parole/ui/window.ui")]
 	public class ApplicationWindow : Gtk.ApplicationWindow {
 
+		protected Parole app;
+
 		protected Xml.Doc *XmlDoc;
 
 		[GtkChild]
@@ -65,10 +67,49 @@ namespace Parole {
 
 
 
+		/**
+		  * Constructor
+		  */
+		public ApplicationWindow (Parole application) {
+			GLib.Object (application: application);
+			app = application;
+
+			this.set_default_size(960,680);
+			this.open(GLib.File.new_for_path("/home/hannenz/Parole/passwords.xml"));
+
+			passwords_liststore = new Gtk.ListStore(
+				7,
+				typeof(string),				/* title */
+				typeof(string),				/* url */
+				typeof(string),				/* username */
+				typeof(string),				/* password */
+				typeof(string),				/* remark */
+				typeof(Xml.Node), 				/* XML node */
+				typeof(Gdk.Pixbuf)
+			);
+			passwords_treeview.set_model(passwords_liststore);
+			passwords_treeview.row_activated.connect(on_passwords_treeview_row_activated);
+
+			var selection = passwords_treeview.get_selection();
+			selection.set_mode(Gtk.SelectionMode.SINGLE);
+			selection.changed.connect(on_passwords_treeview_selection_changed);
+
+			password_column.set_cell_data_func(password_cell, (Gtk.CellLayoutDataFunc)render_password);
+
+			password_edit_view = new PasswordEditView (new PasswordEntry (), "");
+
+			stack.add_named (password_edit_view, "edit");
+
+#if WITH_GRANITE
+			back_button.get_style_context ().add_class (Granite.STYLE_CLASS_BACK_BUTTON);
+#endif
+		}
+
+
 		[GtkCallback]
 		public void on_password_entry_activated (Gtk.Entry entry) {
 			/* stdout.printf ("You entered: %s\n", entry.get_text ()); */
-			if ( entry.get_text () == "abc"){
+			if ( entry.get_text () == app.master_password){
 				stack.set_visible_child (content_box);	
 				lock_button.show ();
 				new_button.show ();
@@ -100,39 +141,6 @@ namespace Parole {
 			app_menu.popup (null, null, null, 0, 0);
 		}
 
-		public ApplicationWindow (Gtk.Application application) {
-			GLib.Object (application: application);
-
-			this.set_default_size(960,680);
-			this.open(GLib.File.new_for_path("/home/hannenz/Parole/passwords.xml"));
-
-			passwords_liststore = new Gtk.ListStore(
-				7,
-				typeof(string),				/* title */
-				typeof(string),				/* url */
-				typeof(string),				/* username */
-				typeof(string),				/* password */
-				typeof(string),				/* remark */
-				typeof(Xml.Node), 				/* XML node */
-				typeof(Gdk.Pixbuf)
-			);
-			passwords_treeview.set_model(passwords_liststore);
-			passwords_treeview.row_activated.connect(on_passwords_treeview_row_activated);
-
-			var selection = passwords_treeview.get_selection();
-			selection.set_mode(Gtk.SelectionMode.SINGLE);
-			selection.changed.connect(on_passwords_treeview_selection_changed);
-
-			password_column.set_cell_data_func(password_cell, (Gtk.CellLayoutDataFunc)render_password);
-
-			password_edit_view = new PasswordEditView (new PasswordEntry (), "");
-			stack.add_named (password_edit_view, "edit");
-
-#if WITH_GRANITE
-			back_button.get_style_context ().add_class (Granite.STYLE_CLASS_BACK_BUTTON);
-#endif
-		}
-
 
 
 		[GtkCallback]
@@ -144,7 +152,7 @@ namespace Parole {
 
 			var password_entry = new PasswordEntry ();
 			password_edit_view.set_password_entry (password_entry);
-			stack.set_visible_child_name ("edit");
+			stack.set_visible_child (password_edit_view);
 			back_button.show ();
 			return;
 
@@ -358,7 +366,7 @@ namespace Parole {
 
 
 			password_edit_view.set_password_entry (password_entry);
-			stack.set_visible_child_name ("edit");
+			stack.set_visible_child (password_edit_view);
 			back_button.show ();
 
 			return;

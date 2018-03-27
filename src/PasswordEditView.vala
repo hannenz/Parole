@@ -70,9 +70,14 @@ namespace Parole {
 				return false;
 			});
 
-			var pixbuf = new Gdk.Pixbuf.from_file_at_size ("/home/hannenz/avatar.png", 100, -1);
-			test_image.set_from_pixbuf (pixbuf);
-			test_image.get_style_context ().add_class (Granite.STYLE_CLASS_CARD);
+			try {
+				var pixbuf = new Gdk.Pixbuf.from_file_at_size ("/home/hannenz/avatar.png", 100, -1);
+				test_image.set_from_pixbuf (pixbuf);
+				test_image.get_style_context ().add_class (Granite.STYLE_CLASS_CARD);
+			}
+			catch (Error e) {
+				stderr.printf ("Error: %s\n", e.message);
+			}
 		}
 
 		private void check_if_pawned () {
