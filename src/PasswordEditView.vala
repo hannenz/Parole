@@ -120,11 +120,21 @@ namespace Parole {
 
 
 		public void set_password_entry (PasswordEntry password_entry) {
-			title_entry.set_text (password_entry.title);
-			url_entry.set_text (password_entry.url);
-			username_entry.set_text (password_entry.username);
-			secret_entry.set_text (password_entry.secret);
-			remark_entry.buffer.text = password_entry.remark;
+			if (password_entry.title != null) {
+				title_entry.set_text (password_entry.title);
+			}
+			if (password_entry.url != null) {
+				url_entry.set_text (password_entry.url);
+			}
+			if (password_entry.username != null) {
+				username_entry.set_text (password_entry.username);
+			}
+			if (password_entry.secret != null) {
+				secret_entry.set_text (password_entry.secret);
+			}
+			if (password_entry.remark != null) {
+				remark_entry.buffer.text = password_entry.remark;
+			}
 		}
 
 		[GtkCallback]

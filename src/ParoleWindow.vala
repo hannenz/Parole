@@ -75,7 +75,7 @@ namespace Parole {
 			app = application;
 
 			this.set_default_size(960,680);
-			this.open(GLib.File.new_for_path("/home/hannenz/Parole/passwords.xml"));
+			this.open(app.password_store_file);
 
 			passwords_liststore = new Gtk.ListStore(
 				7,
@@ -215,13 +215,15 @@ namespace Parole {
 			cell.set_property("text", "∙∙∙∙∙∙");
 		}
 
-		public void open (GLib.File file){
-			var filename = file.get_path();
-			debug("Opening file: %s\n", filename);
-			XmlDoc = Parser.parse_file(filename);
-			if (XmlDoc == null) {
-				stderr.printf("File not found or not readable\n");
-				return;
+		public void open (string filename){
+
+			var file_loader = new FileLoader ();
+			var file = GLib.File.new_for_path (filename);
+			try {
+				XmlDoc = file_loader.load (file, app.master_password);
+			}
+			catch (GLib.Error e) {
+				stderr.printf ("Loading file %s failed: %s\n", filename, e.message);
 			}
 
 			Xml.Node *rootNode = XmlDoc->get_root_element();
@@ -234,9 +236,7 @@ namespace Parole {
 			var root = sourcelist.root;
 			var categories_item = new Granite.Widgets.SourceList.ExpandableItem("Categories");
 
-			if (rootNode->name == "database") {
-				add_passwords(rootNode, categories_item);
-			}
+			add_passwords(rootNode, categories_item);
 
 			root.add(categories_item);
 			root.expand_all(true, false);
