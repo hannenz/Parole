@@ -14,7 +14,6 @@ namespace Parole {
 		private Xml.Doc* xml_document;
 
 
-
 		public Parole () {
 			application_id = "de.hannenz.parole";
 			flags |= GLib.ApplicationFlags.HANDLES_OPEN;
@@ -98,6 +97,63 @@ namespace Parole {
 		}
 
 
+
+		/**
+		  * Open a password store file
+		  *
+		  * @param string 		The filename
+		  * @return XmlNode* 	The XML Doc's root node
+		  * @throws GLib.Error
+		  */
+		public Xml.Node* load_file (string filename) throws GLib.Error {
+
+			var file_loader = new FileLoader ();
+			var file = GLib.File.new_for_path (filename);
+			/* try { */
+				xml_document = file_loader.load (file, master_password);
+			/* } */
+			/* catch (GLib.Error e) { */
+			/* 	stderr.printf ("Loading file %s failed: %s\n", filename, e.message); */
+			/* } */
+
+			Xml.Node *root_node = xml_document->get_root_element();
+			if (root_node == null) {
+				throw new GLib.Error (0, 0, "No root element in XML file found");
+			}
+
+			return root_node;
+		}
+
+
+
+		/**
+		  * Get a category's node (in XML document)
+		  *
+		  * @param string 			The category's name
+		  * @return Xml.Node*Node 	The XML node
+		  */
+		public Xml.Node* get_node_for_category (string category) {
+			Xml.Node *node = null;
+			Xml.XPath.Context ctx = new Xml.XPath.Context (xml_document);
+
+			string expression = "//*[@category='" + category +"']";
+
+			Xml.XPath.Object *res = ctx.eval_expression (expression);
+			assert (res != null);
+			assert (res->type == Xml.XPath.ObjectType.NODESET);
+			assert (res->nodesetval != null);
+
+			if (res->nodesetval->length () == 1) {
+				node = res->nodesetval->item(0);
+			}
+			delete res;
+			return node;
+		}
+
+
+		public void save_file () {
+			xml_document->save_format_file_enc (password_store_file, "UTF-8", true);
+		}
 
 		public void preferences () {
 			debug ("preferences: implemet me!");

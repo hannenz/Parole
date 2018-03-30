@@ -8,7 +8,6 @@ namespace Parole {
 
 		protected Parole app;
 
-		protected Xml.Doc *XmlDoc;
 
 		[GtkChild]
 		private Gtk.Stack stack;
@@ -74,10 +73,10 @@ namespace Parole {
 			GLib.Object (application: application);
 			app = application;
 
-			this.set_default_size(960,680);
-			this.open(app.password_store_file);
+			this.set_default_size (960,680);
+			this.open (app.password_store_file);
 
-			passwords_liststore = new Gtk.ListStore(
+			passwords_liststore = new Gtk.ListStore (
 				7,
 				typeof(string),				/* title */
 				typeof(string),				/* url */
@@ -166,7 +165,7 @@ namespace Parole {
 			if (dlg.run () == Gtk.ResponseType.ACCEPT) {
 				password_entry = view.get_password_entry ();
 
-				Xml.Node *category = get_node_for_category(sl_item.name);
+				Xml.Node *category = app.get_node_for_category(sl_item.name);
 
 				Xml.Node *entry = new Xml.Node (null, "entry");
 				entry->new_prop ("title", password_entry.title);
@@ -175,7 +174,7 @@ namespace Parole {
 				entry->new_text_child (null, "secret", password_entry.secret);
 				entry->new_text_child (null, "remark", password_entry.remark);
 				category->add_child (entry);
-				XmlDoc->save_format_file_enc ("/home/hannenz/Parole/passwords.xml", "UTF-8", true);
+				app.save_file ();
 
 				Gtk.TreeIter iter;
 				passwords_liststore.append (out iter);
@@ -193,59 +192,38 @@ namespace Parole {
 			dlg.destroy ();
 		}
 
-		private Xml.Node* get_node_for_category(string category) {
-			Xml.Node *node = null;
-			Xml.XPath.Context ctx = new Xml.XPath.Context(XmlDoc);
-
-			string expression = "//*[@category='" + category +"']";
-
-			Xml.XPath.Object *res = ctx.eval_expression(expression);
-			assert (res != null);
-			assert (res->type == Xml.XPath.ObjectType.NODESET);
-			assert (res->nodesetval != null);
-
-			if (res->nodesetval->length() == 1) {
-				node = res->nodesetval->item(0);
-			}
-			delete res;
-			return node;
-		}
 
 		public void render_password (/*Gtk.CellLayout layout, */Gtk.CellRendererText cell, Gtk.TreeModel model, Gtk.TreeIter iter) {
 			cell.set_property("text", "∙∙∙∙∙∙");
 		}
 
-		public void open (string filename){
 
-			var file_loader = new FileLoader ();
-			var file = GLib.File.new_for_path (filename);
+		public void open (string filename) {
+			Xml.Node *root_node = null;
 			try {
-				XmlDoc = file_loader.load (file, app.master_password);
+				root_node = root_node = this.app.load_file (filename);
 			}
 			catch (GLib.Error e) {
-				stderr.printf ("Loading file %s failed: %s\n", filename, e.message);
+				// TODO: Create a dialog or infobar messageor something similar...
+				stderr.printf ("Loading failed: %s\n", e.message);
 			}
 
-			Xml.Node *rootNode = XmlDoc->get_root_element();
-			if (rootNode == null) {
-				stderr.printf("No root element in XML file found\n");
-				return;
-			}
-
-			sourcelist = new Granite.Widgets.SourceList();
+			sourcelist = new Granite.Widgets.SourceList ();
 			var root = sourcelist.root;
-			var categories_item = new Granite.Widgets.SourceList.ExpandableItem("Categories");
+			var categories_item = new Granite.Widgets.SourceList.ExpandableItem ("Categories");
 
-			add_passwords(rootNode, categories_item);
+			add_passwords (root_node, categories_item);
 
-			root.add(categories_item);
-			root.expand_all(true, false);
-			sourcelist.item_selected.connect(on_source_list_item_selected);
+			root.add (categories_item);
+			root.expand_all (true, false);
+			sourcelist.item_selected.connect (on_source_list_item_selected);
 
-			sidebar_sw.add(sourcelist);
+			sidebar_sw.add (sourcelist);
 
-			sourcelist.show();
+			sourcelist.show ();
 		}
+
+
 
 		private void add_passwords(Xml.Node *node, Granite.Widgets.SourceList.ExpandableItem sourceListItem) {
 
@@ -278,7 +256,7 @@ namespace Parole {
 
 		private void on_source_list_item_selected(Granite.Widgets.SourceList.Item? item) {
 
-			Xml.Node *node = get_node_for_category(item.name);
+			Xml.Node *node = app.get_node_for_category(item.name);
 
 			passwords_liststore.clear();
 
@@ -436,7 +414,7 @@ namespace Parole {
 					}
 				}
 				message ("Saving xml document\n");
-				XmlDoc->save_file ("/home/hannenz/Parole/passwords.xml");
+				app.save_file ();
 			}
 
 			dlg.close ();
