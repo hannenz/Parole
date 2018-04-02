@@ -8,7 +8,6 @@ namespace Parole {
 
 		protected Parole app;
 
-
 		[GtkChild]
 		private Gtk.Stack stack;
 
@@ -201,7 +200,7 @@ namespace Parole {
 		public void open (string filename) {
 			Xml.Node *root_node = null;
 			try {
-				root_node = root_node = this.app.load_file (filename);
+				root_node = this.app.load_file (filename);
 			}
 			catch (GLib.Error e) {
 				// TODO: Create a dialog or infobar messageor something similar...
@@ -227,8 +226,6 @@ namespace Parole {
 
 		private void add_passwords(Xml.Node *node, Granite.Widgets.SourceList.ExpandableItem sourceListItem) {
 
-			// assert (node->name == "passwords");
-
 			for (Xml.Node *iter = node->children; iter != null; iter = iter->next) {
 
 				if (iter->type == Xml.ElementType.ELEMENT_NODE && iter->name == "passwords") {
@@ -248,11 +245,12 @@ namespace Parole {
 							var item = new Granite.Widgets.SourceList.Item(category);
 							sourceListItem.add(item);
 						}
-
 					}
 				}
 			}
 		}
+
+
 
 		private void on_source_list_item_selected(Granite.Widgets.SourceList.Item? item) {
 
@@ -281,6 +279,7 @@ namespace Parole {
 					}
 					catch (GLib.Error e) {
 						stderr.printf ("Error: %s\n", e.message);
+						passwordEntry.pixbuf = app.default_pixbuf;
 					}
 
 
@@ -342,17 +341,31 @@ namespace Parole {
 				6, out password_entry.pixbuf
 			);
 
-
-			password_edit_view.set_password_entry (password_entry);
-			stack.set_visible_child (password_edit_view);
-			back_button.show ();
-
-			return;
-
+			/* password_edit_view.set_password_entry (password_entry); */
+			/* stack.set_visible_child (password_edit_view); */
+			/* back_button.show (); */
+            /*  */
+			/* return; */
+            /*  */
 			var dlg = new Gtk.Dialog.with_buttons ("Edit password entry", this, 0, "_Cancel", Gtk.ResponseType.CANCEL, "_OK", Gtk.ResponseType.ACCEPT);
+			dlg.set_default_response  (Gtk.ResponseType.ACCEPT);
 			var view = new PasswordEditView (password_entry, "");
 			var content_area = dlg.get_content_area ();
 			content_area.add (view);
+			view.pwned.connect ( () => {
+				var info_bar = new Gtk.InfoBar ();
+				info_bar.message_type = Gtk.MessageType.ERROR;
+				info_bar.show_close_button = true;
+				var label = new Gtk.Label (null);
+				label.set_markup ("This password has been pawned and should not be used anymore.\nPassword check by <a href=\"https://haveibeenpwned.com\" title=\"https://haveibeenpwned.com\">https://haveibeenpawned.com</a>");
+				info_bar.get_content_area ().add (label);
+				info_bar.response.connect ( () => {
+					info_bar.destroy ();
+				});
+
+				content_area.pack_start (info_bar);
+				info_bar.show_all ();
+			});
 
 			if (dlg.run () == Gtk.ResponseType.ACCEPT) {
 				password_entry = view.get_password_entry ();
@@ -387,6 +400,22 @@ namespace Parole {
 								subnode->set_content (password_entry.remark);
 								break;
 							case "image":
+								try {
+
+									uint8[] buf;
+									password_entry.pixbuf.save_to_buffer (out buf, "jpeg");
+									debug (Base64.encode (buf));
+									subnode->set_content (Base64.encode (buf));
+									/* password_entry.pixbuf.save_to_callback ( (buf) => { */
+									/* 	subnode->set_content (Base64.encode (buf)); */
+									/* 	return true; */
+									/* }, "png"); */
+								}
+								catch (GLib.Error e) {
+									stderr.printf ("Error: %s\n", e.message);
+								}
+								break;
+
 								debug (password_entry.pixbuf.get_width ().to_string ());
 								debug (password_entry.pixbuf.get_height ().to_string ());
 								var h = password_entry.pixbuf.get_height ();

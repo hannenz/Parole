@@ -7,9 +7,11 @@ namespace Parole {
 		private ApplicationWindow window;
 
 		// property
-		public string master_password { get; set; default = "abc"; }
+		public string master_password { get; set; default = "aaa"; }
 
 		public string password_store_file = "/home/hannenz/Parole/passwords.xml";
+
+		public Gdk.Pixbuf default_pixbuf;
 
 		private Xml.Doc* xml_document;
 
@@ -17,9 +19,6 @@ namespace Parole {
 		public Parole () {
 			application_id = "de.hannenz.parole";
 			flags |= GLib.ApplicationFlags.HANDLES_OPEN;
-
-			info (master_password);
-
 		}
 
 
@@ -65,10 +64,6 @@ namespace Parole {
 
 
 
-
-
-
-
 		protected override void startup () {
 			base.startup ();
 			var action = new GLib.SimpleAction ("preferences", null);
@@ -94,6 +89,8 @@ namespace Parole {
 			var app_menu = builder.get_object ("app_menu") as GLib.MenuModel;
 
 			set_app_menu (app_menu);
+
+			default_pixbuf = new Gdk.Pixbuf.from_resource_at_scale ("/de/hannenz/parole/default_icon.png", 48, -1, true);
 		}
 
 
@@ -158,18 +155,6 @@ namespace Parole {
 		public void preferences () {
 			debug ("preferences: implemet me!");
 		}
-
-
-
-		/* public override void open (GLib.File[] files, string hint){ */
-		/* 	if (window == null){ */
-		/* 		window = new ApplicationWindow	 (this); */
-		/* 	} */
-		/* 	foreach (var file in files) { */
-		/* 		window.open (file); */
-		/* 	} */
-		/* 	window.present(); */
-		/* } */
 	}
 
 

@@ -165,6 +165,7 @@
 										<child>
 											<object class="GtkTreeViewColumn">
 												<property name="title">URL</property>
+												<aaproperty name="visible">False</property>
 												<property name="resizable">True</property>
 												<child>
 													<object class="GtkCellRendererText" />
@@ -176,6 +177,7 @@
 										</child>
 										<child>
 											<object class="GtkTreeViewColumn">
+												<property name="visible">False</property>
 												<property name="title">Username</property>
 												<property name="resizable">True</property>
 												<child>
@@ -190,6 +192,7 @@
 											<object class="GtkTreeViewColumn" id="password_column">
 												<property name="title">Password</property>
 												<property name="resizable">True</property>
+												<property name="visible">False</property>
 												<child>
 													<object class="GtkCellRendererText" id="password_cell" />
 													<attributes>

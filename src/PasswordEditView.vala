@@ -5,8 +5,8 @@ namespace Parole {
 	[GtkTemplate (ui="/de/hannenz/parole/ui/password_edit_view.ui")]
 	public class PasswordEditView : Gtk.Grid {
 
-		[GtkChild]
-		private Gtk.ComboBox category_select;
+		/* [GtkChild] */
+		/* private Gtk.ComboBox category_select; */
 
 		[GtkChild]
 		private Gtk.Entry title_entry;
@@ -41,6 +41,8 @@ namespace Parole {
 
 		public PasswordEntry password_entry;
 
+		public signal void pwned ();
+
 		[GtkCallback]
 		private void on_generate_password_button_clicked () {
 			generator.regenerate_password ();
@@ -70,15 +72,9 @@ namespace Parole {
 				return false;
 			});
 
-			try {
-				var pixbuf = new Gdk.Pixbuf.from_file_at_size ("/home/hannenz/avatar.png", 100, -1);
-				test_image.set_from_pixbuf (pixbuf);
-				test_image.get_style_context ().add_class (Granite.STYLE_CLASS_CARD);
-			}
-			catch (Error e) {
-				stderr.printf ("Error: %s\n", e.message);
-			}
 		}
+
+
 
 		private void check_if_pawned () {
 
@@ -90,8 +86,11 @@ namespace Parole {
 
 			// Get SHA1 hash of password
 			var hash = GLib.Checksum.compute_for_string (ChecksumType.SHA1, password);
+			var hash_prefix = hash.substring (0, 5);
+			var hash_suffix = hash.substring (5, -1);
 
-			string url = "https://api.pwnedpasswords.com/pwnedpassword/%s".printf (hash);
+			string url = "https://api.pwnedpasswords.com/range/%s".printf (hash_prefix);
+
 			var session = new Soup.Session ();
 			var message = new Soup.Message ("GET", url);
 
@@ -99,7 +98,19 @@ namespace Parole {
 			session.queue_message (message, (session, message) => {
 				pwned_spinner.stop ();
 				pwned_spinner.hide ();
-				pwned_label.set_label (message.status_code == 404 ? "ok" : "pwned");
+				try {
+					var regex = new Regex ("%s".printf (hash_suffix), RegexCompileFlags.CASELESS, 0);
+					if (regex.match ((string)message.response_body.data, 0)) {
+						pwned_label.set_markup ("<span color=\"#c00000\">✕</span>");
+						pwned ();
+					}
+					else {
+						pwned_label.set_markup ("<span color=\"#00c000\">✔</span>");
+					}
+				}
+				catch (Error e) {
+					stderr.printf ("Regex failed\n");
+				}
 				pwned_label.show ();
 			});
 		}
@@ -135,11 +146,17 @@ namespace Parole {
 			if (password_entry.remark != null) {
 				remark_entry.buffer.text = password_entry.remark;
 			}
+			if (password_entry.pixbuf != null) {
+				test_image.set_from_pixbuf (password_entry.pixbuf);
+				test_image.get_style_context ().add_class (Granite.STYLE_CLASS_CARD);
+			}
 		}
 
 		[GtkCallback]
 		private void select_image_from_disk () {
-			var  dlg = new Gtk.FileChooserDialog ("Select image", null, Gtk.FileChooserAction.OPEN, "_Cancel", Gtk.ResponseType.CANCEL, "_Open", Gtk.ResponseType.ACCEPT);
+			var  dlg = new Gtk.FileChooserDialog ("Select image", null, 
+												  Gtk.FileChooserAction.OPEN, "_Cancel",
+												  Gtk.ResponseType.CANCEL, "_Open", Gtk.ResponseType.ACCEPT);
 
 			var filter = new Gtk.FileFilter ();
 			dlg.set_filter (filter);
@@ -153,8 +170,8 @@ namespace Parole {
 				debug (filename);
 
 				try {
-					password_entry.pixbuf = new Gdk.Pixbuf.from_file_at_size (filename, -1, 120);
-					image.set_from_pixbuf (password_entry.pixbuf);
+					password_entry.pixbuf = new Gdk.Pixbuf.from_file_at_scale (filename, -1, 48, true);
+					test_image.set_from_pixbuf (password_entry.pixbuf);
 				}
 				catch (Error e) {
 					stderr.printf ("Error: %s\n", e.message);
